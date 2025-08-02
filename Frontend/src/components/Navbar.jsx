@@ -1,114 +1,150 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
+import { PlusCircle, ListChecks } from 'lucide-react';
 import {
-    NavLink,
-    useLocation,
-} from 'react-router-dom';
-import {
-    navItems,
-    userMenuItems,
-} from '@/constants/navbar';
-import {
-    Avatar,
-    Button,
-    Dropdown,
-    DropdownItem,
-    DropdownMenu,
-    DropdownTrigger,
-    Navbar,
-    NavbarBrand,
-    NavbarContent,
-    NavbarItem,
-    NavbarMenu,
-    NavbarMenuItem,
-    NavbarMenuToggle,
-} from '@heroui/react';
+  AppLogo,
+  NavButton,
+  LoginButton,
+  UserAvatar,
+  UserDropdown,
+  MobileMenu,
+  MobileMenuToggle
+} from './header_ui.jsx';
+import { useNavigate } from 'react-router-dom';
 
-export default function UserNavbar() {
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
+const Header = ({ 
+  user = "mudit", 
+  currentRoute = '/', 
+}) => {
+  const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
-    return (
-        <Navbar isBordered maxWidth="full" onMenuOpenChange={setIsMenuOpen}>
-            {/* Left: Hamburger + Brand */}
-            <NavbarContent justify="start">
-                <NavbarMenuToggle
-                    aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-                    className="lg:hidden"
+  const onNavigate = (path) => {
+    navigate(path);
+    setIsMobileMenuOpen(false);
+  };
+
+
+  const handleLogoClick = () => {
+    navigate("/dashboard");
+  };
+
+  const handleLoginClick = () => {
+    navigate("/login")
+  };
+
+  const handleLogoutClick = () => {
+    navigate("/logout");
+    setIsUserDropdownOpen(false);
+    setIsMobileMenuOpen(false);
+  };
+
+  const handleProfileClick = () => {
+    navigate('/profile');
+    setIsUserDropdownOpen(false);
+  };
+
+  const toggleUserDropdown = () => {
+    setIsUserDropdownOpen(!isUserDropdownOpen);
+  };
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false);
+  };
+
+  return (
+    <>
+      {/* Add Montserrat font */}
+      <link 
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" 
+        rel="stylesheet" 
+      />
+      
+      <header className="relative w-full bg-gradient-to-r from-[#CAF0F8]/80 via-[#CAF0F8]/70 to-[#CAF0F8]/80 backdrop-blur-md border-b border-white/30 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            {/* Left section - Logo */}
+            <div className="flex items-center">
+              <AppLogo onClick={handleLogoClick} />
+            </div>
+
+            {/* Desktop Navigation - Right section */}
+            <div className="hidden md:flex items-center space-x-4">
+              {user ? (
+                <>
+                  {/* Create New Issue Button */}
+                  <NavButton
+                    icon={PlusCircle}
+                    onClick={() => onNavigate('/report')}
+                    isActive={currentRoute === '/report'}
+                  >
+                    Create New Issue
+                  </NavButton>
+
+                  {/* My Issues Button */}
+                  <NavButton
+                    icon={ListChecks}
+                    onClick={() => onNavigate('/issues')}
+                    isActive={currentRoute === '/issues'}
+                  >
+                    My Issues
+                  </NavButton>
+
+                  {/* User Avatar and Dropdown */}
+                  <div className="relative">
+                    <UserAvatar 
+                      user={user} 
+                      onClick={toggleUserDropdown}
+                    />
+                    <UserDropdown
+                      isOpen={isUserDropdownOpen}
+                      onClose={() => setIsUserDropdownOpen(false)}
+                      onProfile={handleProfileClick}
+                      onLogout={handleLogoutClick}
+                    />
+                  </div>
+                </>
+              ) : (
+                /* Login Button */
+                <LoginButton onClick={handleLoginClick} />
+              )}
+            </div>
+
+            {/* Mobile Navigation */}
+            <div className="md:hidden flex items-center space-x-2">
+              {user && (
+                <UserAvatar 
+                  user={user} 
+                  onClick={() => onNavigate('/profile')}
                 />
-                <NavbarBrand>
-                    <NavLink to="/dashboards/all" className="font-Rubik font-bold text-xl">
-                        Vizibble
-                    </NavLink>
-                </NavbarBrand>
-            </NavbarContent>
+              )}
+              <MobileMenuToggle
+                isOpen={isMobileMenuOpen}
+                onClick={toggleMobileMenu}
+              />
+            </div>
+          </div>
+        </div>
 
-            {/* Center: Desktop Nav Links */}
-            <NavbarContent className="hidden lg:flex gap-2" justify="center">
-                {navItems.map(({ link, text, icon }) => (
-                    <NavbarItem key={text}>
-                        <NavElement link={link} text={text} icon={icon} />
-                    </NavbarItem>
-                ))}
-            </NavbarContent>
+        {/* Mobile Menu */}
+        <MobileMenu
+          isOpen={isMobileMenuOpen}
+          onClose={closeMobileMenu}
+          user={user}
+          currentRoute={currentRoute}
+          onNavigate={onNavigate}
+          onLogout={handleLogoutClick}
+        />
+      </header>
+    </>
+  );
+};
 
-            {/* Right: User Avatar */}
-            <NavbarContent justify="end">
-                <Dropdown>
-                    <DropdownTrigger>
-                        <Avatar
-                            isBordered
-                            as="button"
-                            className="transition-transform"
-                            color="primary"
-                            name="Jason Hughes"
-                            size="md"
-                            src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
-                        />
-                    </DropdownTrigger>
-                    <DropdownMenu variant="solid">
-                        {userMenuItems.map(({ key, label, to, color }) => (
-                            <DropdownItem key={key} color={color} variant="bordered">
-                                <NavLink to={to}>{label}</NavLink>
-                            </DropdownItem>
-                        ))}
-                    </DropdownMenu>
-                </Dropdown>
-            </NavbarContent>
+export default Header;
 
-            {/* Mobile: Dropdown menu */}
-            <NavbarMenu className="bg-white">
-                {navItems.map(({ link, text, icon }, index) => (
-                    <NavbarMenuItem
-                        key={index}
-                        onClick={() => setIsMenuOpen(false)}
-                    >
-                        <NavElement
-                            link={link}
-                            text={text}
-                            icon={icon}
-                            setIsMenuOpen={setIsMenuOpen}
-                        />
-                    </NavbarMenuItem>
-                ))}
-            </NavbarMenu>
-        </Navbar>
-    );
-}
-
-function NavElement({ link, text, icon }) {
-    const location = useLocation();
-    const isActive = location.pathname === link;
-
-    return (
-        <Button
-            as={NavLink}
-            to={link}
-            radius="full"
-            color="primary"
-            variant={isActive ? "solid" : "ghost"}
-            className="border-0 w-full"
-        >
-            {icon}
-            {text}
-        </Button>
-    );
-}  
+// Alternative export name for flexibility
+export { Header as AppHeader };
