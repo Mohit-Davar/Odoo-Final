@@ -19,6 +19,15 @@ exports.getIssues = async (req, res) => {
     }
 };
 
+exports.getIssueByProfile = async (req, res) => {
+    try {
+        const issues = await issueModel.getIssueByProfile(req.user.id);
+        res.status(200).json(issues);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 exports.getIssueById = async (req, res) => {
     try {
         const issue = await issueModel.getIssueById(req.params.id);

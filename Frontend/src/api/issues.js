@@ -5,8 +5,14 @@ export const getIssues = async () => {
     return data;
 };
 
+
 export const getIssueById = async (id) => {
     const { data } = await api.get(`/issues/${id}`);
+    return data;
+};
+
+export const getIssueByProfile = async () => {
+    const { data } = await api.get(`/issues/profile/`);
     return data;
 };
 

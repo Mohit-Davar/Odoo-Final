@@ -1,22 +1,26 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { PlusCircle, ListChecks } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { getUserProfile } from '@/api/users.js';
 import {
   AppLogo,
   NavButton,
-  LoginButton,
   UserAvatar,
   UserDropdown,
   MobileMenu,
   MobileMenuToggle
 } from './header_ui.jsx';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { toast } from '@heroui/react';
+import { showSuccessToast } from '@/lib/showToast.js';
 
 const Header = ({ 
-  user = "mudit", 
   currentRoute = '/', 
 }) => {
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [user, setUser] = useState("user");
   const navigate = useNavigate();
 
   const onNavigate = (path) => {
@@ -29,14 +33,22 @@ const Header = ({
     navigate("/dashboard");
   };
 
-  const handleLoginClick = () => {
-    navigate("/login")
-  };
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['userProfile'],
+    queryFn: getUserProfile
+  });
 
-  const handleLogoutClick = () => {
-    navigate("/logout");
-    setIsUserDropdownOpen(false);
-    setIsMobileMenuOpen(false);
+  useEffect(()=>{
+    if(data){
+      setUser(data);
+    }
+  }, [data])
+
+
+  const handleLogoutClick = async() => {
+    await axios.delete(`${import.meta.env.VITE_BASE_URL}/auth/session`, { withCredentials: true });
+    showSuccessToast('Logged out successfully');
+    navigate("/");
   };
 
   const handleProfileClick = () => {
@@ -64,7 +76,7 @@ const Header = ({
         rel="stylesheet" 
       />
       
-      <header className="relative w-full bg-gradient-to-r from-[#CAF0F8]/80 via-[#CAF0F8]/70 to-[#CAF0F8]/80 backdrop-blur-md border-b border-white/30 shadow-sm">
+      <header className="relative z-10 w-full bg-gradient-to-r from-[#CAF0F8]/80 via-[#CAF0F8]/70 to-[#CAF0F8]/80 backdrop-blur-md border-b border-white/30 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Left section - Logo */}
@@ -74,7 +86,7 @@ const Header = ({
 
             {/* Desktop Navigation - Right section */}
             <div className="hidden md:flex items-center space-x-4">
-              {user ? (
+              
                 <>
                   {/* Create New Issue Button */}
                   <NavButton
@@ -108,10 +120,7 @@ const Header = ({
                     />
                   </div>
                 </>
-              ) : (
-                /* Login Button */
-                <LoginButton onClick={handleLoginClick} />
-              )}
+              
             </div>
 
             {/* Mobile Navigation */}
