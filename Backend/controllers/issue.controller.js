@@ -58,6 +58,7 @@ exports.deleteIssue = async (req, res) => {
 // Categories
 exports.getIssueCategories = async (req, res) => {
     try {
+        console.log('hello')
         const issueCategories = await issueModel.getIssueCategories();
         res.status(200).json(issueCategories);
     } catch (error) {
@@ -68,6 +69,7 @@ exports.getIssueCategories = async (req, res) => {
 // Statuses
 exports.getIssueStatuses = async (req, res) => {
     try {
+        console.log("bye")
         const issueStatuses = await issueModel.getIssueStatuses();
         res.status(200).json(issueStatuses);
     } catch (error) {

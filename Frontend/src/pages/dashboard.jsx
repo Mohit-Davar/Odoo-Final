@@ -1,159 +1,166 @@
+import { useEffect, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getIssues } from '@/api/issues';
+import {
+    FilterBar, IssueGrid, Pagination, Modal, Toast
+} from '@/components/ui';
 import { flagIssue } from '@/api/flags';
-import { useNavigate } from 'react-router-dom';
-import { useMemo, useState } from 'react';
-import { FilterBar, Footer, Header, IssueGrid, Toast } from '@/components/ui';
-import { Modal, Pagination } from '@heroui/react';
 
 const Dashboard = () => {
-    const navigate = useNavigate();
-
-    // Filter/search/pagination state
-    const [filters, setFilters] = useState({
-        category: '',
-        status: '',
-        distance: ''
-    });
+    const [filters, setFilters] = useState({ category: '', status: '', distance: '' });
     const [searchValue, setSearchValue] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [selectedIssue, setSelectedIssue] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [toast, setToast] = useState({ message: '', type: '', isVisible: false });
 
-    const { data: issues = [], isLoading, isError } = useQuery({
+    const [userLocation, setUserLocation] = useState(null);
+
+    useEffect(() => {
+        navigator.geolocation.getCurrentPosition(
+            (pos) => {
+                setUserLocation({
+                    lat: pos.coords.latitude,
+                    lon: pos.coords.longitude
+                });
+            },
+            (err) => console.error("Location error:", err),
+            { enableHighAccuracy: true }
+        );
+    }, []);
+
+    const { data: rawIssues = [], isLoading } = useQuery({
         queryKey: ['issues'],
         queryFn: getIssues
     });
 
-    const issuesPerPage = 6;
+    const haversine = (coord1, coord2) => {
+        const R = 6371e3;
+        const φ1 = coord1.lat * Math.PI / 180;
+        const φ2 = coord2.lat * Math.PI / 180;
+        const Δφ = (coord2.lat - coord1.lat) * Math.PI / 180;
+        const Δλ = (coord2.lon - coord1.lon) * Math.PI / 180;
+        const a = Math.sin(Δφ / 2) ** 2 + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) ** 2;
+        return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    };
 
-    //Filter and search logic
+    const issues = useMemo(() => {
+        return rawIssues.map(issue => {
+            const coords = JSON.parse(issue.geojson)?.coordinates || [0, 0];
+            const issueCoords = { lat: coords[1], lon: coords[0] };
+
+            let distance = '';
+            if (userLocation) {
+                const meters = haversine(userLocation, issueCoords);
+                distance = meters > 1000 ? `${(meters / 1000).toFixed(1)} km` : `${Math.round(meters)} m`;
+            }
+
+            const timeDiffMin = Math.floor((Date.now() - new Date(issue.created_at)) / 60000);
+            const timeAgo = timeDiffMin < 1
+                ? "Just now"
+                : timeDiffMin === 1
+                    ? "1 minute ago"
+                    : `${timeDiffMin} minutes ago`;
+
+            return {
+                id: issue.id,
+                title: issue.title,
+                description: issue.description,
+                location: issue.address,
+                category: issue.category,
+                status: issue.status,
+                distance,
+                timestamp: timeAgo,
+                verified: !issue.is_anonymous,
+                hasImage: !!issue.photo_url,
+                imageUrl: issue.photo_url,
+                pseudonym: issue.pseudonym,
+                reporter: issue.user_name
+            };
+        });
+    }, [rawIssues, userLocation]);
+
+    // Filter + Search + Pagination
     const filteredIssues = useMemo(() => {
         let filtered = [...issues];
 
-        if (filters.category) {
-            filtered = filtered.filter(issue => issue.category === filters.category);
+        if (filters.category) filtered = filtered.filter(i => i.category === filters.category);
+        if (filters.status) filtered = filtered.filter(i => i.status === filters.status);
+        if (filters.distance && userLocation) {
+            const maxDist = parseFloat(filters.distance);
+            filtered = filtered.filter(i => parseFloat(i.distance) <= maxDist);
         }
-
-        if (filters.status) {
-            filtered = filtered.filter(issue => issue.status === filters.status);
-        }
-
-        if (filters.distance) {
-            const maxDistance = parseFloat(filters.distance);
-            filtered = filtered.filter(issue => {
-                const issueDistance = parseFloat(issue.distance);
-                return issueDistance <= maxDistance;
-            });
-        }
-
         if (searchValue) {
-            filtered = filtered.filter(issue =>
-                issue.title.toLowerCase().includes(searchValue.toLowerCase()) ||
-                issue.description.toLowerCase().includes(searchValue.toLowerCase()) ||
-                issue.location.toLowerCase().includes(searchValue.toLowerCase())
+            filtered = filtered.filter(i =>
+                i.title.toLowerCase().includes(searchValue.toLowerCase()) ||
+                i.description.toLowerCase().includes(searchValue.toLowerCase()) ||
+                i.location.toLowerCase().includes(searchValue.toLowerCase())
             );
         }
 
         return filtered;
-    }, [issues, filters, searchValue]);
+    }, [issues, filters, searchValue, userLocation]);
 
+    const issuesPerPage = 6;
     const totalPages = Math.ceil(filteredIssues.length / issuesPerPage);
-    const startIndex = (currentPage - 1) * issuesPerPage;
-    const currentIssues = filteredIssues.slice(startIndex, startIndex + issuesPerPage);
-
-    // Handlers
-    const handleFilterChange = (filterType, value) => {
-        setFilters(prev => ({ ...prev, [filterType]: value }));
-        setCurrentPage(1);
-    };
-
-    const handleSearchChange = (value) => setSearchValue(value);
-    const handlePageChange = (page) => page >= 1 && page <= totalPages && setCurrentPage(page);
-    const handleCardClick = (issue) => {
-        setSelectedIssue(issue);
-        setIsModalOpen(true);
-    };
-    const handleModalClose = () => {
-        setIsModalOpen(false);
-        setSelectedIssue(null);
-    };
+    const currentIssues = filteredIssues.slice((currentPage - 1) * issuesPerPage, currentPage * issuesPerPage);
 
     const handleFlag = async (issueId) => {
         try {
-            await flagIssue(issueId, 'No reason provided');
-            showToast('Issue flagged for moderation', 'success');
+            await flagIssue(issueId, 'Reason...');
+            showToast('Flagged issue for moderation', 'success');
         } catch {
-            showToast('Failed to flag issue', 'error');
+            showToast('Error flagging issue', 'error');
         }
     };
 
-    const handleLogin = () => navigate('/login');
-    const showToast = (message, type = 'info') => {
-        setToast({ message, type, isVisible: true });
-        setTimeout(() => {
-            setToast(prev => ({ ...prev, isVisible: false }));
-        }, 3000);
+    const showToast = (msg, type = 'info') => {
+        setToast({ message: msg, type, isVisible: true });
+        setTimeout(() => setToast(prev => ({ ...prev, isVisible: false })), 3000);
     };
-    const handleToastClose = () => setToast(prev => ({ ...prev, isVisible: false }));
 
     return (
-        <div className="min-h-screen font-montserrat" style={{
-            background: `
+        <div className="min-h-screen font-montserrat"
+            style={{
+                background: `
         linear-gradient(135deg, #CAF0F8 0%, #ADE8F4 25%, #90E0EF 50%, #68D8F0 75%, #48BFE3 100%),
         radial-gradient(circle at 20% 20%, rgba(255,255,255,0.3) 0%, transparent 50%),
         radial-gradient(circle at 80% 80%, rgba(255,255,255,0.2) 0%, transparent 50%),
         conic-gradient(from 45deg at 50% 50%, rgba(255,255,255,0.1) 0deg, transparent 90deg, rgba(255,255,255,0.1) 180deg, transparent 270deg)
         `
-        }}>
+            }}
+        >
             <div className="mx-auto px-4 py-8 max-w-7xl container">
-                <Header onLoginClick={handleLogin} />
                 <FilterBar
                     filters={filters}
-                    onFilterChange={handleFilterChange}
+                    onFilterChange={(type, val) => setFilters(prev => ({ ...prev, [type]: val }))}
                     searchValue={searchValue}
-                    onSearchChange={handleSearchChange}
+                    onSearchChange={setSearchValue}
                 />
 
                 {isLoading ? (
-                    <div className="py-12 font-semibold text-lg text-center">Loading issues...</div>
-                ) : isError ? (
-                    <div className="py-12 text-red-600 text-lg text-center">Failed to load issues</div>
+                    <p className="text-center">Loading...</p>
                 ) : currentIssues.length > 0 ? (
                     <>
                         <IssueGrid
                             issues={currentIssues}
-                            onCardClick={handleCardClick}
+                            onCardClick={setSelectedIssue}
                             onFlag={handleFlag}
                         />
-                        {totalPages > 1 && (
-                            <Pagination
-                                currentPage={currentPage}
-                                totalPages={totalPages}
-                                onPageChange={handlePageChange}
-                            />
-                        )}
+                        <Pagination
+                            currentPage={currentPage}
+                            totalPages={totalPages}
+                            onPageChange={setCurrentPage}
+                        />
                     </>
                 ) : (
-                    <div className="py-12 text-center">
-                        <div className="bg-white/30 shadow-lg backdrop-blur-md p-8 border border-white/40 rounded-2xl">
-                            <p className="font-montserrat font-medium text-black text-xl">
-                                No issues found matching your criteria
-                            </p>
-                            <p className="mt-2 font-montserrat text-black/70">
-                                Try adjusting your filters or search terms
-                            </p>
-                        </div>
-                    </div>
+                    <p className="text-center">No matching issues found</p>
                 )}
-
-                <Footer />
             </div>
 
             <Modal
                 isOpen={isModalOpen}
-                onClose={handleModalClose}
+                onClose={() => setIsModalOpen(false)}
                 issue={selectedIssue}
             />
 
@@ -161,7 +168,7 @@ const Dashboard = () => {
                 message={toast.message}
                 type={toast.type}
                 isVisible={toast.isVisible}
-                onClose={handleToastClose}
+                onClose={() => setToast(prev => ({ ...prev, isVisible: false }))}
             />
         </div>
     );

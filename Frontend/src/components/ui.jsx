@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import {
   Search, User, MapPin, Clock, Flag, ChevronLeft, ChevronRight,
   Construction, Lightbulb, Droplets, Trash2, Shield, AlertTriangle,
-  CheckCircle, Loader, X, Calendar, Eye, MapPinIcon
+  CheckCircle, Loader, X, Eye, MapPinIcon
 } from 'lucide-react';
 
 // Header Component
@@ -69,6 +69,7 @@ export const FilterBar = ({ filters, onFilterChange, searchValue, onSearchChange
           getIssueCategories(),
           getIssueStatuses(),
         ]);
+        console.log(categories, statuses)
         setCategories(categories.map(c => c.name));
         setStatuses(statuses.map(s => s.name));
       } catch (error) {
@@ -135,7 +136,6 @@ const getStatusBadge = (status) => {
   );
 };
 
-// Issue Card Component
 export const IssueCard = ({ issue, onClick, onFlag }) => (
   <div
     onClick={() => onClick(issue)}
@@ -154,19 +154,12 @@ export const IssueCard = ({ issue, onClick, onFlag }) => (
       </button>
     </div>
 
-    <div className="mb-3">
-      {getStatusBadge(issue.status)}
-    </div>
+    <div className="mb-3">{getStatusBadge(issue.status)}</div>
 
-    <h3 className="mb-2 font-montserrat font-semibold text-black line-clamp-2">
-      {issue.title}
-    </h3>
+    <h3 className="mb-2 font-semibold text-black line-clamp-2">{issue.title}</h3>
+    <p className="mb-4 text-black/80 text-sm line-clamp-2">{issue.description}</p>
 
-    <p className="mb-4 font-montserrat text-black/80 text-sm line-clamp-2">
-      {issue.description}
-    </p>
-
-    <div className="space-y-2 font-montserrat text-black/70 text-sm">
+    <div className="space-y-2 text-black/70 text-sm">
       <div className="flex items-center space-x-2">
         <MapPin className="w-4 h-4" />
         <span>{issue.location}</span>
@@ -187,8 +180,8 @@ export const IssueCard = ({ issue, onClick, onFlag }) => (
         ) : (
           <Eye className="w-4 h-4 text-black/40" />
         )}
-        <span className="font-montserrat text-black/60 text-xs">
-          {issue.verified ? 'Verified' : 'Anonymous'}
+        <span className="text-black/60 text-xs">
+          {issue.verified ? issue.reporter || 'Verified' : issue.pseudonym || 'Anonymous'}
         </span>
       </div>
 
@@ -200,6 +193,7 @@ export const IssueCard = ({ issue, onClick, onFlag }) => (
     </div>
   </div>
 );
+
 
 // Issue Grid Component
 export const IssueGrid = ({ issues, onCardClick, onFlag }) => (
