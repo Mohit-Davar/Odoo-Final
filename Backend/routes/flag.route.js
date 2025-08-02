@@ -6,10 +6,10 @@ const flag = require('../controllers/flag.controller');
 router.route('/')
     .post(flag.flagIssue);
 
-router.route('/:issueId')
+router.route('/issue/:issueId')
     .get(flag.getIssueFlags);
 
-router.route('/:id')
+router.route('/issue/:id')
     .put(flag.updateIssueFlag);
 
 // Flag Statuses

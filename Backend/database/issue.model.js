@@ -28,6 +28,7 @@ exports.getIssues = async () => {
     try {
         const result = await pool.query(`
             SELECT 
+                i.id,
                 i.title,
                 i.description,
                 i.address,

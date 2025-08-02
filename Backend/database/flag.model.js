@@ -6,11 +6,10 @@ exports.flagIssue = async (userId, flag) => {
         const {
             issue_id,
             reason,
-            status_id
         } = flag;
         const result = await pool.query(
-            'INSERT INTO issue_flags (issue_id, user_id, reason, status_id) VALUES ($1, $2, $3, $4) RETURNING *',
-            [issue_id, userId, reason, status_id]
+            'INSERT INTO issue_flags (issue_id, user_id, reason, status_id) VALUES ($1, $2, $3) RETURNING *',
+            [issue_id, userId, reason]
         );
         return result.rows[0];
     } catch (error) {

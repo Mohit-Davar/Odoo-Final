@@ -58,7 +58,6 @@ exports.deleteIssue = async (req, res) => {
 // Categories
 exports.getIssueCategories = async (req, res) => {
     try {
-        console.log('hello')
         const issueCategories = await issueModel.getIssueCategories();
         res.status(200).json(issueCategories);
     } catch (error) {

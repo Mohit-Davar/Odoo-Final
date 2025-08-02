@@ -21,7 +21,6 @@ exports.updateUserProfile = async (req, res) => {
 
 exports.getUserProfile = async (req, res) => {
     try {
-        console.log("Fetching user profile for user ID:", req.user.id);
         const userProfile = await user.getUserProfile(req.user.id);
         if (!userProfile) {
             return res.status(404).json({ message: 'User profile not found' });

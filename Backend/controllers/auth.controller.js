@@ -91,7 +91,6 @@ exports.userLogin = async (req, res) => {
 }
 
 exports.refreshToken = async (req, res) => {
-    console.log("Refreshing token");
     const refreshToken = req.cookies.refreshToken;
     if (!refreshToken) return res.status(401).json({ message: "No refresh token, please login again" });
 
