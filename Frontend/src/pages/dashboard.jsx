@@ -119,6 +119,22 @@ const Dashboard = () => {
         setTimeout(() => setToast(prev => ({ ...prev, isVisible: false })), 3000);
     };
 
+    const handleCardClick = (issue) => {
+    setSelectedIssue(issue);
+    setIsModalOpen(true);
+  };
+
+    const handleModalClose = () => {
+    setIsModalOpen(false);
+    setSelectedIssue(null);
+  };
+
+    const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
     return (
         <div className="min-h-screen font-montserrat"
             style={{
@@ -144,14 +160,16 @@ const Dashboard = () => {
                     <>
                         <IssueGrid
                             issues={currentIssues}
-                            onCardClick={setSelectedIssue}
+                            onCardClick={handleCardClick}
                             onFlag={handleFlag}
                         />
-                        <Pagination
-                            currentPage={currentPage}
-                            totalPages={totalPages}
-                            onPageChange={setCurrentPage}
-                        />
+                                   {totalPages > 1 && (
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+              />
+            )}
                     </>
                 ) : (
                     <p className="text-center">No matching issues found</p>
@@ -160,7 +178,7 @@ const Dashboard = () => {
 
             <Modal
                 isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
+                onClose={handleModalClose}
                 issue={selectedIssue}
             />
 

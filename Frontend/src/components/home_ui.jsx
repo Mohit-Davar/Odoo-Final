@@ -1,6 +1,7 @@
 import React from 'react';
 import { Menu, X, MapPin, Camera, Bell, Filter, Shield, Construction, Lightbulb, Droplets, Trash2, AlertTriangle, Verified as Barrier, ChevronLeft, ChevronRight, Download, Smartphone, Play, Eye, Users, CheckCircle, Star } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { HeroVideoDialog } from './ui/hero-video';
 
 // Google Fonts import
 const GoogleFontsLink = () => (
@@ -134,17 +135,15 @@ export const HeroSection = () => {
           </div>
 
           {/* Right content - Illustration placeholder */}
-          <div className="relative">
-            <div className="bg-white bg-opacity-30 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-white border-opacity-20">
-              <div className="aspect-square bg-gradient-to-br from-black to-gray-600 rounded-xl flex items-center justify-center text-[#CAF0F8] text-6xl font-bold" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                <MapPin size={80} />
-              </div>
-              <div className="mt-6 space-y-2">
-                <div className="h-4 bg-black bg-opacity-20 rounded"></div>
-                <div className="h-4 bg-black bg-opacity-10 rounded w-3/4"></div>
-              </div>
-            </div>
-          </div>
+<div className="relative">
+      <HeroVideoDialog
+        className="dark:block"
+        animationStyle="from-center"
+        videoSrc="https://www.youtube.com/embed/zHu5aaZP6i4?si=zFaNN9YFaBucAFgI"
+        thumbnailSrc="https://res.cloudinary.com/dly4e6wzh/image/upload/v1754141309/Screenshot_2025-08-02_185548_oxlt72.png"
+        thumbnailAlt="Hero Video"
+      />
+    </div>
         </div>
       </div>
     </section>
