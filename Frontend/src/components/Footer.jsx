@@ -1,63 +1,74 @@
-import {
-    MapContainer,
-    Marker,
-    Popup,
-    TileLayer,
-} from 'react-leaflet';
-import { BrutalButton } from '@/components/ui/Button';
-import { links } from '@/constants/footer';
 
-export default function Footer() {
-    const position = [30.757003647065353, 76.76671725767129];
-    return (
-        <footer className="flex md:flex-row flex-col gap-10 md:gap-2 px-8 py-16 w-full font-Poppins">
-            <section className="md:max-w-[40%]">
-                <h2 className="font-Rubik text-3xl">Let&apos;s Talk</h2>
-                <p className="my-4">
-                    Empowering industries with smart IoT solutions. Monitor, analyze, and optimize your machinery and processes with real-time data insights. Let&apos;s build a smarter, more efficient future together!
-                </p>
-                <a
-                    href="https://www.vizibble.in"
-                    target="_blank"
-                    rel='noopener noreferrer'
-                >
-                    <BrutalButton>
-                        Tell us about your problem
-                    </BrutalButton>
-                </a>
-            </section>
-            <div className="space-y-2 links">
-                {links.map(({ icon, href, text }) => {
-                    return (
-                        <div className="flex items-center gap-2" key={text}>
-                            <span>
-                                {icon}
-                            </span>
-                            <a href={href} className="text-blue-500 hover:text-blue-800 text-sm transition-colors duration-100" target="_blank">
-                                {text}
-                            </a>
-                        </div>
-                    )
-                })}
-            </div>
-            <div className="z-0 relative w-full md:w-96 h-56 md:h-40 map">
-                <MapContainer
-                    center={position}
-                    zoom={15}
-                    scrollWheelZoom={true}
-                    style={{
-                        width: "100%",
-                        height: "100%",
-                    }}>
-                    <TileLayer
-                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    />
-                    <Marker position={position}>
-                        <Popup>Technology Enabling Centre, Chandigarh</Popup>
-                    </Marker>
-                </MapContainer>
-            </div>
-        </footer>
-    )
-}
+
+export const Footer = () => {
+  return (
+    <footer className="bg-[#CAF0F8] text-black py-8 px-4 border-t border-gray-200/30">
+      <div className="max-w-6xl mx-auto text-center">
+        <div className="mb-4">
+          <p className="text-sm font-montserrat">
+            Over 2,000+ local issues resolved. Join the community making neighborhoods better.
+          </p>
+        </div>
+        
+        <div className="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-8 mb-4">
+          <a 
+            href="#" 
+            className="font-montserrat text-sm hover:underline transition-all duration-200"
+          >
+            Terms of Service
+          </a>
+          <a 
+            href="#" 
+            className="font-montserrat text-sm hover:underline transition-all duration-200"
+          >
+            Privacy Policy
+          </a>
+          <a 
+            href="#" 
+            className="font-montserrat text-sm hover:underline transition-all duration-200"
+          >
+            Admin Login
+          </a>
+          <a 
+            href="#" 
+            className="font-montserrat text-sm hover:underline transition-all duration-200"
+          >
+            Help & Support
+          </a>
+        </div>
+
+        <div className="flex justify-center space-x-6 mb-4">
+          <a 
+            href="#" 
+            aria-label="Facebook"
+            className="font-montserrat text-sm hover:text-gray-700 transition-colors duration-200"
+          >
+            Facebook
+          </a>
+          <a 
+            href="#" 
+            aria-label="Twitter"
+            className="font-montserrat text-sm hover:text-gray-700 transition-colors duration-200"
+          >
+            Twitter
+          </a>
+          <a 
+            href="#" 
+            aria-label="Instagram"
+            className="font-montserrat text-sm hover:text-gray-700 transition-colors duration-200"
+          >
+            Instagram
+          </a>
+        </div>
+
+        <div className="pt-4 border-t border-gray-200/30">
+          <p className="font-montserrat text-xs text-gray-800">
+            &copy; {new Date().getFullYear()} LocalFix. All rights reserved.
+          </p>
+        </div>
+      </div>
+    </footer>
+  );
+};
+
+export default Footer;
