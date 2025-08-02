@@ -28,8 +28,7 @@ export const useAuthStore = create((set, get) => {
                 originalRequest._retry = true;
                 try {
                     const res = await axios.get(
-                        `${import.meta.env.VITE_BASE_URL}/auth/refresh`,
-                        {},
+                        `${import.meta.env.VITE_BASE_URL}/auth/session`,
                         { withCredentials: true }
                     );
                     const newToken = res.data.accessToken;

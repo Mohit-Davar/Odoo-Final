@@ -9,7 +9,7 @@ export const handleUserLogin = async (
   try {
     const { accessToken } = await userLogin(data);
     setAccessToken(accessToken);
-    navigate("/home");
+    navigate("/dashboard");
   } catch {
     showErrorToast("Login failed");
   }

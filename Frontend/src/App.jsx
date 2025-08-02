@@ -5,7 +5,7 @@ import UserLayout from '@/layouts/User';
 import Login from '@/pages/Login';
 import NotFound from '@/pages/NotFound';
 import Signup from '@/pages/Signup';
-import Dashboard from './pages/Dashboard';
+import Dashboard from '@/pages/dashboard';
 
 export default function App() {
   return (

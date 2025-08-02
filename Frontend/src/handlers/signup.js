@@ -42,7 +42,7 @@ export const handleVerifyOTP = async (
             otp: data.otp
         });
         setAccessToken(accessToken);
-        navigate("/home");
+        navigate("/dashboard");
     } catch (err) {
         showErrorToast(err?.message || "Failed to verify OTP");
     }
