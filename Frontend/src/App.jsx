@@ -6,6 +6,7 @@ import Login from '@/pages/Login';
 import NotFound from '@/pages/NotFound';
 import Signup from '@/pages/Signup';
 import Dashboard from './pages/Dashboard';
+import Profile from './pages/profile';
 
 export default function App() {
   return (
@@ -14,6 +15,7 @@ export default function App() {
         <Route element={<UserLayout />}>
         </Route>
         <Route path='/dashboard' element={<Dashboard />} />
+        <Route path='/profile' element={<Profile />} />
         <Route path='/login' element={<Login />} />
         <Route path='/signup' element={<Signup />} />
         <Route path='*' element={<NotFound />} />
