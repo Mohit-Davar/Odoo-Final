@@ -1,4 +1,4 @@
-function getOTPEmailTemplate({ name, otp, email }) {
+function OTPEmail({ name, otp, email }) {
     return (
         `
         <!DOCTYPE html>
@@ -138,4 +138,4 @@ function getOTPEmailTemplate({ name, otp, email }) {
     )
 }
 
-module.exports = { getOTPEmailTemplate }
+module.exports = { OTPEmail }

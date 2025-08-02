@@ -1,15 +1,19 @@
-const express = require("express");
-const { userSignup, verifyOTP, userLogin, refreshToken, userLogout, resendOTP, } = require("../controllers/auth.controller");
-
+const express = require('express');
 const router = express.Router();
+const auth = require('../controllers/auth.controller');
 
-router.post("/signup", userSignup);
-router.post("/login", userLogin);
-router.route("/otp")
-    .post(verifyOTP)
-    .put(resendOTP);
-router.route("/session")
-    .get(refreshToken)
-    .delete(userLogout);
+//Auth
+router.post('/signup', auth.userSignup)
+router.post('/login', auth.userLogin)
+
+//OTP
+router.route('/otp')
+    .post(auth.verifyOTP)
+    .put(auth.resendOTP);
+
+//Session
+router.route('/session')
+    .get(auth.refreshToken)
+    .delete(auth.userLogout);
 
 module.exports = router;

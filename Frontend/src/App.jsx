@@ -13,10 +13,10 @@ export default function App() {
       <Routes>
         <Route element={<UserLayout />}>
         </Route>
+        <Route path='/dashboard' element={<Dashboard />} />
         <Route path='/login' element={<Login />} />
         <Route path='/signup' element={<Signup />} />
         <Route path='*' element={<NotFound />} />
-        <Route path='/dashboard' element={<Dashboard />} />
       </Routes>
       <Toast />
     </>

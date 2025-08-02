@@ -36,9 +36,16 @@ const cookieParser = require("cookie-parser");
 app.use(cookieParser());
 
 //Different Routes
-// const authenticateToken = require("./middleware/authenticateToken.js");
+const authenticateToken = require("./middleware/authenticateToken.js");
 const auth = require("./routes/auth.route.js");
+const user = require("./routes/user.route.js");
+const issue = require("./routes/issue.route.js");
+const flag = require("./routes/flag.route.js");
+
 app.use("/auth", auth);
+app.use("/user", authenticateToken, user);
+app.use("/issues", authenticateToken, issue);
+app.use("/flags", authenticateToken, flag);
 
 //Connecting the Database
 const redis = require("./service/redis.js");

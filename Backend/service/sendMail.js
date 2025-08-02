@@ -42,9 +42,9 @@ const emailTransporter = nodemailer.createTransport({
  * @throws {Error} Logs an error if email sending fails after all retries are exhausted.
  * 
  * @example
- * send_Email_Alert("Alert: Tanker Data", "Fuel level is low on tanker #5", "<h1>Fuel level is low on tanker #5</h1>", 3, "recipient@example.com");
+ * sendEmail("Alert: Tanker Data", "Fuel level is low on tanker #5", "<h1>Fuel level is low on tanker #5</h1>", 3, "recipient@example.com");
  */
-function send_Email_Alert(subject, text, html, retryCount = 3, receiver) {
+function sendEmail(subject, text, html, retryCount = 3, receiver) {
     const mailOptions = {
         from: process.env.EMAIL,
         to: receiver,
@@ -60,7 +60,7 @@ function send_Email_Alert(subject, text, html, retryCount = 3, receiver) {
         console.error(`[${new Date().toLocaleString("en-GB")}] Error sending email: ${error.message}`);
         if (retryCount > 0) {
             console.log(`Retrying... Attempts left: ${retryCount}`);
-            setTimeout(() => send_Email_Alert(subject, text, html, retryCount - 1, receiver), 5000);
+            setTimeout(() => sendEmail(subject, text, html, retryCount - 1, receiver), 5000);
         } else {
             console.error('Failed to send email:', error);
             throw new Error(error)
@@ -68,4 +68,4 @@ function send_Email_Alert(subject, text, html, retryCount = 3, receiver) {
     }
 }
 
-module.exports = { send_Email_Alert };
+module.exports = { sendEmail };
