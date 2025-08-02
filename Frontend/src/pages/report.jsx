@@ -12,6 +12,8 @@ import {
   Footer,
   StatusBadge
 } from '@/components/report_ui';
+import { ArrowLeft } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const ISSUE_CATEGORIES = [
   { value: 'roads', label: 'Roads', icon: 'Construction' },
@@ -148,6 +150,11 @@ const CreateIssue = () => {
       setIsSubmitting(false);
     }
   };
+  const navigate = useNavigate();
+
+  const handleBack = ()=>{
+    navigate('/dashboard'); 
+  }
 
   const isFormValid = formData.category && 
                      formData.title.trim() && 
@@ -156,11 +163,13 @@ const CreateIssue = () => {
                      Object.keys(errors).length === 0;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-civic-blue via-blue-100 to-cyan-100 font-montserrat">
-      <Header />
-      
+    <div className="min-h-screen bg-gradient-to-br from-civic-blue via-blue-100 to-cyan-100 font-montserrat"> 
       <main className="container mx-auto px-4 py-8 max-w-4xl">
         <FormCard>
+        <button onClick={handleBack} className="flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-black hover:bg-white/30 transition-all duration-200">
+        <ArrowLeft className="w-4 h-4" />
+        <span className="font-medium">Back</span>
+      </button>
           <form onSubmit={handleSubmit} className="space-y-8">
             {/* Header Section */}
             <div className="text-center mb-8">

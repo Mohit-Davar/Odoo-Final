@@ -6,6 +6,7 @@ import {
   EditForm, 
   Footer 
 } from '@/components/profile_ui';
+import { Edit3 } from 'lucide-react';
 
 const Profile = () => {
   const [isEditing, setIsEditing] = useState(false);
@@ -73,10 +74,19 @@ const Profile = () => {
            fontFamily: 'Montserrat, sans-serif'
          }}>
       
-      <Header isEditing={isEditing} onEdit={handleEdit} />
-      
       <main className="container mx-auto px-4 py-8 max-w-4xl">
         <div className="space-y-8">
+
+                          {!isEditing && (
+        <button
+          onClick={handleEdit}
+          className="flex items-center space-x-2 px-4 py-2 bg-white/30 hover:bg-white/40 backdrop-blur-md rounded-xl border border-white/40 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50"
+          aria-label="Edit Profile"
+        >
+          <Edit3 className="w-4 h-4 text-black" />
+          <span className="text-black font-medium">Edit Profile</span>
+        </button>
+      )}
           
           {!isEditing ? (
             <>
