@@ -7,6 +7,7 @@ import NotFound from '@/pages/NotFound';
 import Signup from '@/pages/Signup';
 import Dashboard from './pages/Dashboard';
 import Profile from './pages/profile';
+import CreateIssue from './pages/report';
 
 export default function App() {
   return (
@@ -18,6 +19,8 @@ export default function App() {
         <Route path='/profile' element={<Profile />} />
         <Route path='/login' element={<Login />} />
         <Route path='/signup' element={<Signup />} />
+        <Route path='/report' element={<CreateIssue />} />
+        <Route path='/profile' element={<Profile />} />
         <Route path='*' element={<NotFound />} />
       </Routes>
       <Toast />
