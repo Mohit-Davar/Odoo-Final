@@ -96,6 +96,13 @@ export const FilterBar = ({ filters, onFilterChange, searchValue, onSearchChange
           onChange={(value) => onFilterChange('status', value)}
           icon={Clock}
         />
+        <FilterDropdown
+        label="Distance"
+        value={filters.distance}
+        options={['1km', '3km', '5km']}
+        onChange={(value) => onFilterChange('distance', value)}
+        icon={MapPin}
+      />
         <SearchBar value={searchValue} onChange={onSearchChange} />
       </div>
     </div>
