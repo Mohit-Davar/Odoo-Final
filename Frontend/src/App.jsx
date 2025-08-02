@@ -5,6 +5,7 @@ import UserLayout from '@/layouts/User';
 import Login from '@/pages/Login';
 import NotFound from '@/pages/NotFound';
 import Signup from '@/pages/Signup';
+import Dashboard from './pages/Dashboard';
 
 export default function App() {
   return (
@@ -15,6 +16,7 @@ export default function App() {
         <Route path='/login' element={<Login />} />
         <Route path='/signup' element={<Signup />} />
         <Route path='*' element={<NotFound />} />
+        <Route path='/dashboard' element={<Dashboard />} />
       </Routes>
       <Toast />
     </>

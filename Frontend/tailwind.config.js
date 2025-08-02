@@ -12,10 +12,12 @@ export default {
       fontFamily: {
         "Poppins": ["Poppins", "serif"],
         "Rubik": ["Rubik Mono One", "serif"],
-        "Inconsolata": ['Inconsolata', "serif"]
+        "Inconsolata": ['Inconsolata', "serif"],
+        'montserrat': ['Montserrat', 'sans-serif']
       },
       colors: {
         "primary": "black",
+         'civic-blue': '#CAF0F8',
       }
     },
   },
