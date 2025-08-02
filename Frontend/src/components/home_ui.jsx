@@ -1,5 +1,6 @@
 import React from 'react';
 import { Menu, X, MapPin, Camera, Bell, Filter, Shield, Construction, Lightbulb, Droplets, Trash2, AlertTriangle, Verified as Barrier, ChevronLeft, ChevronRight, Download, Smartphone, Play, Eye, Users, CheckCircle, Star } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 // Google Fonts import
 const GoogleFontsLink = () => (
@@ -19,6 +20,11 @@ if (typeof document !== 'undefined') {
 
 export const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+  const navigate = useNavigate();
+
+  const handleLogin = ()=>{
+    navigate("/login");
+  }
 
   return (
     <header className="relative z-50 px-4 sm:px-6 lg:px-8 py-6">
@@ -51,7 +57,7 @@ export const Header = () => {
 
         {/* CTA Button */}
         <div className="hidden md:block">
-          <button className="bg-black text-[#CAF0F8] px-6 py-3 rounded-lg font-semibold hover:shadow-lg hover:scale-105 transition-all duration-200" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+          <button onClick={handleLogin} className="bg-black text-[#CAF0F8] px-6 py-3 rounded-lg font-semibold hover:shadow-lg hover:scale-105 transition-all duration-200" style={{ fontFamily: 'Montserrat, sans-serif' }}>
             Get Started
           </button>
         </div>
@@ -84,7 +90,7 @@ export const Header = () => {
               <a href="#faq" className="block text-black font-medium" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                 FAQ
               </a>
-              <button className="w-full bg-black text-[#CAF0F8] px-6 py-3 rounded-lg font-semibold" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              <button onClick={handleLogin} className="w-full bg-black text-[#CAF0F8] px-6 py-3 rounded-lg font-semibold" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                 Get Started
               </button>
             </div>
@@ -112,7 +118,7 @@ export const HeroSection = () => {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <button className="bg-black text-[#CAF0F8] px-8 py-4 rounded-lg font-bold text-lg hover:shadow-xl hover:scale-105 transition-all duration-200 flex items-center justify-center gap-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              <button onClick={handleLogin} className="bg-black text-[#CAF0F8] px-8 py-4 rounded-lg font-bold text-lg hover:shadow-xl hover:scale-105 transition-all duration-200 flex items-center justify-center gap-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                 <Camera size={20} />
                 Report an Issue
               </button>
@@ -335,20 +341,6 @@ export const DownloadCTA = () => {
             <p className="text-xl text-black font-medium" style={{ fontFamily: 'Montserrat, sans-serif' }}>
               Download LocalFix and start reporting issues in your neighborhood today.
             </p>
-          </div>
-
-          <button className="bg-black text-[#CAF0F8] px-12 py-6 rounded-xl font-bold text-xl hover:shadow-2xl hover:scale-105 transition-all duration-200 flex items-center justify-center gap-3 mx-auto" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-            <Download size={24} />
-            Download the App
-          </button>
-
-          <div className="flex justify-center items-center gap-8 pt-4">
-            <div className="bg-white bg-opacity-30 backdrop-blur-sm rounded-lg px-6 py-3 shadow-lg border border-white border-opacity-30">
-              <span className="text-black font-semibold" style={{ fontFamily: 'Montserrat, sans-serif' }}>App Store</span>
-            </div>
-            <div className="bg-white bg-opacity-30 backdrop-blur-sm rounded-lg px-6 py-3 shadow-lg border border-white border-opacity-30">
-              <span className="text-black font-semibold" style={{ fontFamily: 'Montserrat, sans-serif' }}>Google Play</span>
-            </div>
           </div>
         </div>
       </div>
