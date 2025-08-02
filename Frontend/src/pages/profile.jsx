@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect } from 'react';
+import { getUserProfile } from '@/api/users.js';
+import { useQuery } from '@tanstack/react-query';
 import { 
-  Header, 
   ProfileCard, 
   AddressCard, 
   EditForm, 
@@ -22,6 +23,12 @@ const Profile = () => {
     country: 'United States'
   });
 
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['userProfile'],
+    queryFn: getUserProfile
+  });
+
+  console.log(data);
   const [formData, setFormData] = useState(profileData);
   const [avatarPreview, setAvatarPreview] = useState(null);
 
@@ -66,6 +73,12 @@ const Profile = () => {
       reader.readAsDataURL(file);
     }
   };
+
+  useEffect(() => {
+  if (data) {
+    setProfileData(data);
+  }
+}, [data]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-sky-50 to-cyan-50" 

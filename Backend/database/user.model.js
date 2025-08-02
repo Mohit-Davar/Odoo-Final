@@ -41,7 +41,22 @@ exports.updateUserProfile = async (userId, profile) => {
 
 exports.getUserProfile = async (userId) => {
     try {
-        const result = await pool.query('SELECT * FROM user_profiles WHERE user_id = $1', [userId]);
+        const result = await pool.query(`
+            SELECT 
+                u.name,
+                up.avatar_url,
+                up.bio,
+                up.date_of_birth,
+                up.phone_number,
+                ul.address,
+                ul.city,
+                ul.postal_code,
+                ul.country
+            FROM users u
+            LEFT JOIN user_profiles up ON u.id = up.user_id
+            LEFT JOIN user_locations ul ON u.id = ul.user_id
+            WHERE u.id = $1
+        `, [userId]);
         return result.rows[0];
     } catch (error) {
         console.error(`[DATABASE] Error getting user profile: ${error.message}`);
