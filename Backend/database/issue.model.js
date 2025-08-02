@@ -64,6 +64,47 @@ exports.getIssues = async () => {
     }
 };
 
+exports.getIssueByProfile = async (userId) => {
+    try {
+        const result = await pool.query(`
+            SELECT 
+                i.id,
+                i.title,
+                i.description,
+                i.address,
+                i.is_anonymous,
+                i.created_at,
+                i.updated_at,
+                ST_AsGeoJSON(i.location) AS geojson,
+                ic.name AS category,
+                istatus.name AS status,
+                CASE WHEN i.is_anonymous THEN NULL ELSE u.id END AS user_id,
+                CASE WHEN i.is_anonymous THEN NULL ELSE u.name END AS user_name,
+                CASE WHEN i.is_anonymous THEN NULL ELSE up.avatar_url END AS user_avatar,
+                p.pseudonym,
+                ip.media_url AS photo_url
+            FROM issues i
+            JOIN issue_categories ic ON i.category_id = ic.id
+            JOIN issue_statuses istatus ON i.status_id = istatus.id
+            LEFT JOIN users u ON u.id = i.user_id
+            LEFT JOIN user_profiles up ON up.user_id = u.id
+            LEFT JOIN user_pseudonyms p ON p.id = i.pseudonym_id
+            LEFT JOIN LATERAL (
+                SELECT media_url FROM issue_photos ip
+                WHERE ip.issue_id = i.id
+                ORDER BY ip.created_at ASC
+                LIMIT 1
+            ) ip ON true
+            WHERE i.user_id = $1
+            ORDER BY i.created_at DESC;
+        `, [userId]);
+        return result.rows;
+    } catch (error) {
+        console.error(`[DATABASE] Error getting issues by profile: ${error.message}`);
+        throw error;
+    }
+};
+
 exports.getIssueById = async (id) => {
     try {
         const result = await pool.query('SELECT * FROM issues WHERE id = $1', [id]);

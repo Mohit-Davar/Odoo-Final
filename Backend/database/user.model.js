@@ -23,17 +23,62 @@ exports.createUserProfile = async (userId, profile) => {
 exports.updateUserProfile = async (userId, profile) => {
     try {
         const {
+            name,
             avatar_url,
             bio,
             date_of_birth,
-            phone_number
+            phone_number,
+            address,
+            city,
+            postal_code,
+            country
         } = profile;
-        const result = await pool.query(
-            'UPDATE user_profiles SET avatar_url = $2, bio = $3, date_of_birth = $4, phone_number = $5, updated_at = CURRENT_TIMESTAMP WHERE user_id = $1 RETURNING *',
+
+        // Start transaction
+        await pool.query('BEGIN');
+
+        // Update user name
+        await pool.query(
+            'UPDATE users SET name = $2 WHERE id = $1',
+            [userId, name]
+        );
+
+        // Update user profile
+        await pool.query(
+            'UPDATE user_profiles SET avatar_url = $2, bio = $3, date_of_birth = $4, phone_number = $5, updated_at = CURRENT_TIMESTAMP WHERE user_id = $1',
             [userId, avatar_url, bio, date_of_birth, phone_number]
         );
+
+        // Update user location
+        await pool.query(
+            'UPDATE user_locations SET address = $2, city = $3, postal_code = $4, country = $5, updated_at = CURRENT_TIMESTAMP WHERE user_id = $1',
+            [userId, address, city, postal_code, country]
+        );
+
+        // Commit transaction
+        await pool.query('COMMIT');
+
+        // Return updated profile
+        const result = await pool.query(`
+            SELECT 
+                u.name,
+                up.avatar_url,
+                up.bio,
+                up.date_of_birth,
+                up.phone_number,
+                ul.address,
+                ul.city,
+                ul.postal_code,
+                ul.country
+            FROM users u
+            LEFT JOIN user_profiles up ON u.id = up.user_id
+            LEFT JOIN user_locations ul ON u.id = ul.user_id
+            WHERE u.id = $1
+        `, [userId]);
+
         return result.rows[0];
     } catch (error) {
+        await pool.query('ROLLBACK');
         console.error(`[DATABASE] Error updating user profile: ${error.message}`);
         throw error;
     }

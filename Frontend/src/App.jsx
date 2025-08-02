@@ -8,6 +8,7 @@ import Signup from '@/pages/Signup';
 import Dashboard from './pages/Dashboard';
 import Profile from './pages/profile';
 import CreateIssue from './pages/report';
+import MyIssues from './pages/myIssues';
 
 export default function App() {
   return (
@@ -17,7 +18,7 @@ export default function App() {
         <Route path='/dashboard' element={<Dashboard />} />
         <Route path='/profile' element={<Profile />} />
         <Route path='/report' element={<CreateIssue />} />
-        <Route path='/issues' element={<CreateIssue />} />
+        <Route path='/issues' element={<MyIssues />} />
         </Route>
         <Route path='/login' element={<Login />} />
         <Route path='/signup' element={<Signup />} />

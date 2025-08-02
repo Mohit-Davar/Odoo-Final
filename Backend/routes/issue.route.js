@@ -7,6 +7,9 @@ router.route('/')
     .post(issue.createIssue)
     .get(issue.getIssues);
 
+router.route('/profile')
+    .get(issue.getIssueByProfile);
+
 router.route('/issue/id')
     .get(issue.getIssueById)
     .put(issue.updateIssue)

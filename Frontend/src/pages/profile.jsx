@@ -1,5 +1,5 @@
 import React, { useState , useEffect } from 'react';
-import { getUserProfile } from '@/api/users.js';
+import { getUserProfile , updateUserProfile} from '@/api/users.js';
 import { useQuery } from '@tanstack/react-query';
 import { 
   ProfileCard, 
@@ -44,13 +44,17 @@ const Profile = () => {
     setAvatarPreview(null);
   };
 
-  const handleSave = () => {
-    setProfileData(formData);
-    setIsEditing(false);
-    setAvatarPreview(null);
-    // Here you would typically save to backend
-    console.log('Profile saved:', formData);
-  };
+const handleSave = async () => {
+    try {
+        await updateUserProfile(formData);
+        setProfileData(formData);
+        setIsEditing(false);
+        setAvatarPreview(null);
+        console.log('Profile saved:', formData);
+    } catch (error) {
+        console.error('Error saving profile:', error);
+    }
+};
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({
