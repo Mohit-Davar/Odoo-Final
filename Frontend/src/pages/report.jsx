@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import {
   FormCard, InputField, DropdownField, TextAreaField, ToggleField,
@@ -8,29 +8,18 @@ import { ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { createIssue, getIssueCategories } from '@/api/issues';
 
-const geocodeLocation = async (locationString) => {
-  if (!locationString.trim()) return null;
-  const response = await fetch(
-    `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(locationString)}&limit=1&addressdetails=1`
-  );
-  if (!response.ok) throw new Error('Geocoding failed');
-  const data = await response.json();
-  return data.length > 0 ? {
-    lat: parseFloat(data[0].lat),
-    lon: parseFloat(data[0].lon),
-    display_name: data[0].display_name,
-    address: data[0].address
-  } : null;
-};
+import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+import { showSuccessToast } from '@/lib/showToast';
 
-const useDebounce = (value, delay) => {
-  const [debouncedValue, setDebouncedValue] = useState(value);
-  React.useEffect(() => {
-    const handler = setTimeout(() => setDebouncedValue(value), delay);
-    return () => clearTimeout(handler);
-  }, [value, delay]);
-  return debouncedValue;
-};
+// Fix Leaflet icons
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+});
 
 const CreateIssue = () => {
   const navigate = useNavigate();
@@ -41,7 +30,6 @@ const CreateIssue = () => {
   });
   const [errors, setErrors] = useState({});
   const [toast, setToast] = useState({ show: false, message: '', type: '' });
-  const debouncedLocation = useDebounce(formData.location, 800);
 
   const categoriesQuery = useQuery({
     queryKey: ['categories'],
@@ -52,27 +40,31 @@ const CreateIssue = () => {
   const submitIssueMutation = useMutation({
     mutationFn: createIssue,
     onSuccess: () => {
-      showToast('Issue reported successfully!', 'success');
+      showSuccessToast('Issue reported successfully!');
       setFormData({ category: '', title: '', description: '', location: '', coordinates: null, verified: true, images: [] });
     },
     onError: () => showToast('Failed to submit issue', 'error')
   });
 
-  useQuery({
-    queryKey: ['geocode', debouncedLocation],
-    queryFn: () => geocodeLocation(debouncedLocation),
-    enabled: !!debouncedLocation && debouncedLocation.length > 3,
-    onSuccess: (data) => {
-      if (data) setFormData(prev => ({ ...prev, coordinates: { lat: data.lat, lon: data.lon, display_name: data.display_name } }));
-    }
-  });
+  const LocationMarker = () => {
+    useMapEvents({
+      click(e) {
+        const { lat, lng } = e.latlng;
+        setFormData(prev => ({
+          ...prev,
+          coordinates: { lat, lon: lng }
+        }));
+      }
+    });
+    return null;
+  };
 
   const validateForm = useCallback(() => {
     const newErrors = {};
     if (!formData.category) newErrors.category = 'Category is required';
     if (!formData.title.trim()) newErrors.title = 'Title is required';
     if (!formData.description.trim()) newErrors.description = 'Description is required';
-    if (!formData.location.trim()) newErrors.location = 'Location is required';
+    if (!formData.location.trim()) newErrors.location = 'Address is required';
     if (formData.title.length > 100) newErrors.title = 'Max 100 chars';
     if (formData.description.length > 500) newErrors.description = 'Max 500 chars';
     setErrors(newErrors);
@@ -81,7 +73,6 @@ const CreateIssue = () => {
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-    if (field === 'location') setFormData(prev => ({ ...prev, coordinates: null }));
     if (errors[field]) setErrors(prev => ({ ...prev, [field]: '' }));
   };
 
@@ -130,14 +121,18 @@ const CreateIssue = () => {
       title: formData.title.trim(),
       description: formData.description.trim(),
       location: formData.coordinates ? { x: formData.coordinates.lon, y: formData.coordinates.lat } : null,
-      address: formData.coordinates?.display_name || '',
+      address: formData.location.trim(),
       is_anonymous: !formData.verified,
       pseudonym_id: null,
       status_id: 1,
-      images: formData.images.map(img => ({ name: img.name, size: img.size, type: img.type, base64: img.base64 }))
+      images: formData.images.map(img => ({
+        name: img.name,
+        size: img.size,
+        type: img.type,
+        base64: img.base64
+      }))
     };
 
-    console.log(submissionData)
     submitIssueMutation.mutate(submissionData);
   };
 
@@ -157,8 +152,28 @@ const CreateIssue = () => {
               <DropdownField label="Category" value={formData.category} onChange={(v) => handleInputChange('category', v)} options={categoriesQuery.data || []} error={errors.category} required loading={categoriesQuery.isLoading} />
               <InputField label="Title" value={formData.title} onChange={(v) => handleInputChange('title', v)} placeholder="Brief description" error={errors.title} required maxLength={100} />
             </div>
-            <InputField label="Location" value={formData.location} onChange={(v) => handleInputChange('location', v)} placeholder="Street or landmark" error={errors.location} required icon="MapPin" />
-            {formData.coordinates?.display_name && <div className="bg-gray-100 p-2 rounded text-gray-600 text-sm">Detected: {formData.coordinates.display_name}</div>}
+
+            <div>
+              <label className="block mb-1 font-medium">Select Location on Map</label>
+              <MapContainer
+                center={formData.coordinates ? [formData.coordinates.lat, formData.coordinates.lon] : [28.6139, 77.2090]}
+                zoom={13}
+                style={{ height: '300px', borderRadius: '8px' }}
+              >
+                <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                {formData.coordinates && (
+                  <Marker position={[formData.coordinates.lat, formData.coordinates.lon]} />
+                )}
+                <LocationMarker />
+              </MapContainer>
+              {formData.coordinates && (
+                <div className="bg-gray-100 mt-2 p-2 rounded text-gray-700 text-sm">
+                  Coordinates: {formData.coordinates.lat.toFixed(5)}, {formData.coordinates.lon.toFixed(5)}
+                </div>
+              )}
+              <InputField label="Enter Address" value={formData.location} onChange={(v) => handleInputChange('location', v)} error={errors.location} required placeholder="Enter address manually" />
+            </div>
+
             <TextAreaField label="Description" value={formData.description} onChange={(v) => handleInputChange('description', v)} error={errors.description} required maxLength={500} />
             <ToggleField label="Report as Verified" value={formData.verified} onChange={(v) => handleInputChange('verified', v)} description="Your identity will be attached" />
             <ImageUploadSection images={formData.images} onUpload={handleImageUpload} onRemove={handleImageRemove} fileInputRef={fileInputRef} />
