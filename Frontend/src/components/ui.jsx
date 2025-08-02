@@ -69,7 +69,6 @@ export const FilterBar = ({ filters, onFilterChange, searchValue, onSearchChange
           getIssueCategories(),
           getIssueStatuses(),
         ]);
-        console.log(categories, statuses)
         setCategories(categories.map(c => c.name));
         setStatuses(statuses.map(s => s.name));
       } catch (error) {

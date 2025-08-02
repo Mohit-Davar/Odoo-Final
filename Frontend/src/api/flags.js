@@ -6,6 +6,7 @@ export const getFlagStatuses = async () => {
 };
 
 export const flagIssue = async (issueId, reason) => {
+    console.log(issueId)
     const { data } = await api.post('/flags', { issue_id: issueId, reason });
     return data;
 };
