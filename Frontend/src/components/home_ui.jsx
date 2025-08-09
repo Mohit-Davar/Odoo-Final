@@ -123,13 +123,13 @@ export const HeroSection = () => {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <button onClick={handleLogin} className="bg-black text-[#CAF0F8] px-8 py-4 rounded-lg font-bold text-lg hover:shadow-xl hover:scale-105 transition-all duration-200 flex items-center justify-center gap-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              <button className="bg-black text-[#CAF0F8] px-8 py-4 rounded-lg font-bold text-lg hover:shadow-xl hover:scale-105 transition-all duration-200 flex items-center justify-center gap-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                 <Camera size={20} />
-                Report an Issue
+              <a href="/login">Report an Issue</a>  
               </button>
               <button className="border-2 border-black text-black px-8 py-4 rounded-lg font-bold text-lg hover:bg-black hover:text-[#CAF0F8] hover:shadow-xl transition-all duration-200 flex items-center justify-center gap-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                 <Play size={20} />
-                See How it Works
+                <a href="https://youtu.be/zHu5aaZP6i4">See How it Works</a>
               </button>
             </div>
           </div>
