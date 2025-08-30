@@ -645,8 +645,8 @@ const CreateEditEvent = () => {
   }
 
   return (
-    <div className="bg-gradient-to-br from-civic-blue via-blue-100 to-cyan-100 min-h-screen font-montserrat">
-      <main className="mx-auto px-4 py-8 max-w-4xl container">
+    <div className="bg-secondary min-h-screen font-montserrat">
+      <main className="mx-auto px-4 py-8 bg-secondary-text max-w-4xl container">
         <FormCard>
           <button 
             onClick={() => navigate('/dashboard')} 
@@ -660,7 +660,7 @@ const CreateEditEvent = () => {
             <h1 className="font-bold text-black text-3xl text-center">
               {isEditMode ? 'Edit Event' : 'Add New Event'}
             </h1>
-            <StatusBadge />
+
 
             {/* Basic Information */}
             <div className="gap-6 grid md:grid-cols-2">
@@ -907,55 +907,102 @@ const CreateEditEvent = () => {
             />
 
             {/* Image Upload */}
-            <Controller
-              name="images"
-              control={control}
-              render={({ field }) => (
-                <ImageUploadSection
-                  images={field.value}
-                  onUpload={(files) => {
-                    const maxSize = 5 * 1024 * 1024;
-                    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
-                    const fileList = Array.from(files);
-                    
-                    if (field.value.length + fileList.length > 5) {
-                      showToast('Maximum 5 images allowed', 'error');
-                      return;
-                    }
+<Controller
+  name="images"
+  control={control}
+  render={({ field }) => (
+    <ImageUploadSection
+      images={field.value}
+      onUpload={(files) => {
+        const maxSize = 5 * 1024 * 1024;
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+        const fileList = Array.from(files);
+        const currentImages = field.value || [];
+        
+        // Check if adding new files would exceed the limit
+        const remainingSlots = 5 - currentImages.length;
+        if (remainingSlots <= 0) {
+          showToast('Maximum 5 images allowed. Remove some images first.', 'error');
+          return;
+        }
 
-                    fileList.forEach((file, index) => {
-                      if (!allowedTypes.includes(file.type)) {
-                        showToast('Only JPG/PNG images allowed', 'error');
-                        return;
-                      }
-                      if (file.size > maxSize) {
-                        showToast('File must be under 5MB', 'error');
-                        return;
-                      }
+        // Limit files to remaining slots
+        const filesToProcess = fileList.slice(0, remainingSlots);
+        
+        if (fileList.length > remainingSlots) {
+          showToast(`Only ${remainingSlots} more images can be added (${fileList.length - remainingSlots} files skipped)`, 'warning');
+        }
 
-                      const reader = new FileReader();
-                      reader.onload = (e) => {
-                        const imageData = {
-                          id: Date.now() + Math.random() + index,
-                          name: file.name,
-                          size: file.size,
-                          type: file.type,
-                          base64: e.target.result,
-                          preview: e.target.result,
-                        };
-                        
-                        setValue('images', [...field.value, imageData].slice(0, 5));
-                      };
-                      reader.readAsDataURL(file);
-                    });
-                  }}
-                  onRemove={(imageId) => {
-                    setValue('images', field.value.filter(img => img.id !== imageId));
-                  }}
-                  fileInputRef={fileInputRef}
-                />
-              )}
-            />
+        // Validate each file first
+        const validFiles = [];
+        const invalidFiles = [];
+
+        filesToProcess.forEach(file => {
+          if (!allowedTypes.includes(file.type)) {
+            invalidFiles.push(`${file.name}: Invalid format`);
+          } else if (file.size > maxSize) {
+            invalidFiles.push(`${file.name}: File too large (max 5MB)`);
+          } else {
+            validFiles.push(file);
+          }
+        });
+
+        // Show errors for invalid files
+        if (invalidFiles.length > 0) {
+          showToast(`Invalid files: ${invalidFiles.join(', ')}`, 'error');
+        }
+
+        // Process valid files
+        if (validFiles.length === 0) return;
+
+        let processedCount = 0;
+        const newImages = [];
+
+        validFiles.forEach((file, index) => {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            const imageData = {
+              id: `${Date.now()}_${Math.random().toString(36).substr(2, 9)}_${index}`,
+              name: file.name,
+              size: file.size,
+              type: file.type,
+              base64: e.target.result,
+              preview: e.target.result,
+            };
+            
+            newImages.push(imageData);
+            processedCount++;
+
+            // Update field value when all files are processed
+            if (processedCount === validFiles.length) {
+              const updatedImages = [...currentImages, ...newImages];
+              setValue('images', updatedImages);
+              
+              if (validFiles.length > 0) {
+                showToast(`${validFiles.length} image(s) uploaded successfully`, 'success');
+              }
+            }
+          };
+
+          reader.onerror = () => {
+            showToast(`Error reading file: ${file.name}`, 'error');
+            processedCount++;
+          };
+
+          reader.readAsDataURL(file);
+        });
+      }}
+      onRemove={(imageId) => {
+        const updatedImages = field.value.filter(img => img.id !== imageId);
+        setValue('images', updatedImages);
+        showToast('Image removed', 'success');
+      }}
+      fileInputRef={fileInputRef}
+      maxImages={5}
+      currentCount={field.value?.length || 0}
+    />
+  )}
+/>
 
             {/* Submit Button */}
             <SubmitButton 
