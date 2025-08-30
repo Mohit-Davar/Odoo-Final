@@ -430,11 +430,27 @@ const CreateEditEvent = () => {
   const [toast, setToast] = React.useState({ show: false, message: '', type: '' });
 
   // Queries and mutations
-  const categoriesQuery = useQuery({
-    queryKey: ['categories'],
-    queryFn: getIssueCategories,
-    staleTime: 5 * 60 * 1000,
-  });
+  // const categoriesQuery = useQuery({
+  //   queryKey: ['categories'],
+  //   queryFn: getIssueCategories,
+  //   staleTime: 5 * 60 * 1000,
+  // });
+
+  const categoriesQuery = {
+    isLoading : false,
+    data : [
+  { id: 1, category: 'Conference' },
+  { id: 2, category: 'Workshop' },
+  { id: 3, category: 'Seminar' },
+  { id: 4, category: 'Meetup' },
+  { id: 5, category: 'Webinar' },
+  { id: 6, category: 'Festival' },
+  { id: 7, category: 'Concert' },
+  { id: 8, category: 'Exhibition' },
+  { id: 9, category: 'Networking' },
+  { id: 10, category: 'Competition' },
+]
+  }
 
   // Fetch existing event data if in edit mode
   const eventQuery = useQuery({
@@ -457,7 +473,7 @@ const CreateEditEvent = () => {
       reset();
       setCurrentLocation(null);
       setLocationSuggestions([]);
-      navigate('/dashboard');
+      navigate('/home');
     },
     onError: () => showToast('Failed to create event', 'error')
   });
@@ -649,7 +665,7 @@ const CreateEditEvent = () => {
       <main className="mx-auto px-4 py-8 bg-secondary-text max-w-4xl container">
         <FormCard>
           <button 
-            onClick={() => navigate('/dashboard')} 
+            onClick={() => navigate('/home')} 
             className="flex items-center gap-2 bg-white/20 hover:bg-white/30 px-4 py-2 rounded-full text-black transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />

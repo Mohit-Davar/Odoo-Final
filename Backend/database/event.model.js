@@ -1,238 +1,270 @@
+
 const pool = require('../service/db');
 
-// Issues
-exports.createIssue = async (userID, issue) => {
+// Events
+exports.createEvent = async (userID, eventData) => {
+    const client = await pool.connect();
     try {
+        await client.query('BEGIN');
+
         const {
             category_id,
             title,
             description,
-            location,
-            address,
-            is_anonymous,
-            pseudonym_id,
-            status_id
-        } = issue;
-        const result = await pool.query(
-            'INSERT INTO issues (user_id, category_id, title, description, location, address, is_anonymous, pseudonym_id, status_id) VALUES ($1, $2, $3, $4, ST_SetSRID(ST_MakePoint($5, $6), 4326), $7, $8, $9, $10) RETURNING *',
-            [userID, category_id, title, description, location.x, location.y, address, is_anonymous, pseudonym_id, status_id]
+            location, // coordinates object {x, y}
+            address, // location string
+            start_date,
+            end_date,
+            status_id,
+            images
+        } = eventData;
+
+        const eventResult = await client.query(
+            `INSERT INTO events (user_id, title, description, category, location, coordinates, start_datetime, end_datetime, status)
+             VALUES ($1, $2, $3, $4, $5, ST_SetSRID(ST_MakePoint($6, $7), 4326), $8, $9, $10) RETURNING *`,
+            [userID, title, description, category_id, address, location.x, location.y, start_date, end_date, status_id]
         );
-        return result.rows[0];
+        const newEvent = eventResult.rows[0];
+
+        if (images && images.length > 0) {
+            const imagePromises = images.map((image, index) => {
+                return client.query(
+                    'INSERT INTO event_images (event_id, image_url, is_cover) VALUES ($1, $2, $3)',
+                    [newEvent.id, image.base64, index === 0] // Set first image as cover
+                );
+            });
+            await Promise.all(imagePromises);
+        }
+
+        await client.query('COMMIT');
+        return newEvent;
     } catch (error) {
-        console.error(`[DATABASE] Error creating issue: ${error.message}`);
+        await client.query('ROLLBACK');
+        console.error(`[DATABASE] Error creating event: ${error.message}`);
         throw error;
+    } finally {
+        client.release();
     }
 };
 
-exports.getIssues = async () => {
+exports.getEvents = async () => {
     try {
         const result = await pool.query(`
             SELECT 
-                i.id,
-                i.title,
-                i.description,
-                i.address,
-                i.is_anonymous,
-                i.created_at,
-                i.updated_at,
-                ST_AsGeoJSON(i.location) AS geojson,
-                ic.name AS category,
-                istatus.name AS status,
-                CASE WHEN i.is_anonymous THEN NULL ELSE u.id END AS user_id,
-                CASE WHEN i.is_anonymous THEN NULL ELSE u.name END AS user_name,
-                CASE WHEN i.is_anonymous THEN NULL ELSE up.avatar_url END AS user_avatar,
-                p.pseudonym,
-                ip.media_url AS photo_url
-            FROM issues i
-            JOIN issue_categories ic ON i.category_id = ic.id
-            JOIN issue_statuses istatus ON i.status_id = istatus.id
-            LEFT JOIN users u ON u.id = i.user_id
+                e.id,
+                e.title,
+                e.description,
+                e.location as address,
+                e.start_datetime,
+                e.end_datetime,
+                e.created_at,
+                ST_AsGeoJSON(e.coordinates) AS geojson,
+                ec.category AS category,
+                es.status AS status,
+                u.id AS user_id,
+                u.name AS user_name,
+                up.avatar_url AS user_avatar,
+                (SELECT image_url FROM event_images WHERE event_id = e.id AND is_cover = true LIMIT 1) AS cover_image_url
+            FROM events e
+            JOIN event_categories ec ON e.category_id = ec.id
+            JOIN event_status es ON e.status = es.id
+            LEFT JOIN users u ON u.id = e.user_id
             LEFT JOIN user_profiles up ON up.user_id = u.id
-            LEFT JOIN user_pseudonyms p ON p.id = i.pseudonym_id
-            LEFT JOIN LATERAL (
-                SELECT media_url FROM issue_photos ip
-                WHERE ip.issue_id = i.id
-                ORDER BY ip.created_at ASC
-                LIMIT 1
-            ) ip ON true
-            ORDER BY i.created_at DESC;
+            ORDER BY e.created_at DESC;
         `);
         return result.rows;
     } catch (error) {
-        console.error(`[DATABASE] Error getting issues: ${error.message}`);
+        console.error(`[DATABASE] Error getting events: ${error.message}`);
         throw error;
     }
 };
 
-exports.getIssueByProfile = async (userId) => {
+exports.getEventByProfile = async (userId) => {
     try {
         const result = await pool.query(`
             SELECT 
-                i.id,
-                i.title,
-                i.description,
-                i.address,
-                i.is_anonymous,
-                i.created_at,
-                i.updated_at,
-                ST_AsGeoJSON(i.location) AS geojson,
-                ic.name AS category,
-                istatus.name AS status,
-                CASE WHEN i.is_anonymous THEN NULL ELSE u.id END AS user_id,
-                CASE WHEN i.is_anonymous THEN NULL ELSE u.name END AS user_name,
-                CASE WHEN i.is_anonymous THEN NULL ELSE up.avatar_url END AS user_avatar,
-                p.pseudonym,
-                ip.media_url AS photo_url
-            FROM issues i
-            JOIN issue_categories ic ON i.category_id = ic.id
-            JOIN issue_statuses istatus ON i.status_id = istatus.id
-            LEFT JOIN users u ON u.id = i.user_id
+                e.id,
+                e.title,
+                e.description,
+                e.location as address,
+                e.start_datetime,
+                e.end_datetime,
+                e.created_at,
+                ST_AsGeoJSON(e.coordinates) AS geojson,
+                ec.category AS category,
+                es.status AS status,
+                u.id AS user_id,
+                u.name AS user_name,
+                up.avatar_url AS user_avatar,
+                (SELECT image_url FROM event_images WHERE event_id = e.id AND is_cover = true LIMIT 1) AS cover_image_url
+            FROM events e
+            JOIN event_categories ec ON e.category_id = ec.id
+            JOIN event_status es ON e.status = es.id
+            LEFT JOIN users u ON u.id = e.user_id
             LEFT JOIN user_profiles up ON up.user_id = u.id
-            LEFT JOIN user_pseudonyms p ON p.id = i.pseudonym_id
-            LEFT JOIN LATERAL (
-                SELECT media_url FROM issue_photos ip
-                WHERE ip.issue_id = i.id
-                ORDER BY ip.created_at ASC
-                LIMIT 1
-            ) ip ON true
-            WHERE i.user_id = $1
-            ORDER BY i.created_at DESC;
+            WHERE e.user_id = $1
+            ORDER BY e.created_at DESC;
         `, [userId]);
         return result.rows;
     } catch (error) {
-        console.error(`[DATABASE] Error getting issues by profile: ${error.message}`);
+        console.error(`[DATABASE] Error getting events by profile: ${error.message}`);
         throw error;
     }
 };
 
-exports.getIssueById = async (id) => {
+exports.getEventById = async (id) => {
     try {
-        const result = await pool.query('SELECT * FROM issues WHERE id = $1', [id]);
-        return result.rows[0];
+        const eventResult = await pool.query(
+            `SELECT e.*, ST_X(e.coordinates::geometry) as lon, ST_Y(e.coordinates::geometry) as lat
+             FROM events e WHERE e.id = $1`, [id]);
+        if (eventResult.rows.length === 0) return null;
+        
+        const event = eventResult.rows[0];
+        
+        const response = {
+            id: event.id,
+            title: event.title,
+            description: event.description,
+            address: event.location, // text address
+            location: { x: event.lon, y: event.lat }, // geo object
+            category_id: event.category_id,
+            start_date: event.start_datetime,
+            end_date: event.end_datetime,
+            status_id: event.status,
+        };
+
+        const imagesResult = await pool.query('SELECT id, image_url, is_cover FROM event_images WHERE event_id = $1', [id]);
+        response.images = imagesResult.rows.map(img => ({
+            id: img.id,
+            preview: img.image_url,
+        }));
+        
+        return response;
     } catch (error) {
-        console.error(`[DATABASE] Error getting issue by ID: ${error.message}`);
+        console.error(`[DATABASE] Error getting event by ID: ${error.message}`);
         throw error;
     }
 };
 
-exports.updateIssue = async (id, issue) => {
+exports.updateEvent = async (id, eventData) => {
+    const client = await pool.connect();
     try {
+        await client.query('BEGIN');
         const {
             category_id,
             title,
             description,
-            location,
-            address,
-            status_id
-        } = issue;
-        const result = await pool.query(
-            'UPDATE issues SET category_id = $1, title = $2, description = $3, location = ST_SetSRID(ST_MakePoint($4, $5), 4326), address = $6, status_id = $7, updated_at = CURRENT_TIMESTAMP WHERE id = $8 RETURNING *',
-            [category_id, title, description, location.x, location.y, address, status_id, id]
+            location, // coordinates
+            address, // location string
+            start_date,
+            end_date,
+            status_id,
+            images
+        } = eventData;
+
+        const result = await client.query(
+            `UPDATE events SET 
+                category_id = $1, 
+                title = $2, 
+                description = $3, 
+                coordinates = ST_SetSRID(ST_MakePoint($4, $5), 4326), 
+                location = $6, 
+                start_datetime = $7, 
+                end_datetime = $8, 
+                status = $9
+             WHERE id = $10 RETURNING *`,
+            [category_id, title, description, location.x, location.y, address, start_date, end_date, status_id, id]
         );
+        
+        await client.query('DELETE FROM event_images WHERE event_id = $1', [id]);
+        if (images && images.length > 0) {
+            const imagePromises = images.map((image, index) => {
+                return client.query(
+                    'INSERT INTO event_images (event_id, image_url, is_cover) VALUES ($1, $2, $3)',
+                    [id, image.base64, index === 0]
+                );
+            });
+            await Promise.all(imagePromises);
+        }
+
+        await client.query('COMMIT');
         return result.rows[0];
     } catch (error) {
-        console.error(`[DATABASE] Error updating issue: ${error.message}`);
+        await client.query('ROLLBACK');
+        console.error(`[DATABASE] Error updating event: ${error.message}`);
         throw error;
+    } finally {
+        client.release();
     }
 };
 
-exports.deleteIssue = async (id) => {
+exports.deleteEvent = async (id) => {
     try {
-        const result = await pool.query('DELETE FROM issues WHERE id = $1 RETURNING *', [id]);
+        const result = await pool.query('DELETE FROM events WHERE id = $1 RETURNING *', [id]);
         return result.rows[0];
     } catch (error) {
-        console.error(`[DATABASE] Error deleting issue: ${error.message}`);
+        console.error(`[DATABASE] Error deleting event: ${error.message}`);
         throw error;
     }
 };
 
 // Categories
-exports.getIssueCategories = async () => {
+exports.getEventCategories = async () => {
     try {
-        const result = await pool.query('SELECT * FROM issue_categories');
+        const result = await pool.query('SELECT * FROM event_categories');
         return result.rows;
     } catch (error) {
-        console.error(`[DATABASE] Error getting issue categories: ${error.message}`);
+        console.error(`[DATABASE] Error getting event categories: ${error.message}`);
         throw error;
     }
 };
 
 // Statuses
-exports.getIssueStatuses = async () => {
+exports.getEventStatuses = async () => {
     try {
-        const result = await pool.query('SELECT * FROM issue_statuses');
+        const result = await pool.query('SELECT * FROM event_status');
         return result.rows;
     } catch (error) {
-        console.error(`[DATABASE] Error getting issue statuses: ${error.message}`);
+        console.error(`[DATABASE] Error getting event statuses: ${error.message}`);
         throw error;
     }
 };
 
 // Photos
-exports.addIssuePhoto = async (photo) => {
+exports.addEventPhoto = async (photo) => {
     try {
         const {
-            issue_id,
-            media_url
+            event_id,
+            image_url,
+            is_cover
         } = photo;
         const result = await pool.query(
-            'INSERT INTO issue_photos (issue_id, media_url) VALUES ($1, $2) RETURNING *',
-            [issue_id, media_url]
+            'INSERT INTO event_images (event_id, image_url, is_cover) VALUES ($1, $2, $3) RETURNING *',
+            [event_id, image_url, is_cover || false]
         );
         return result.rows[0];
     } catch (error) {
-        console.error(`[DATABASE] Error adding issue photo: ${error.message}`);
+        console.error(`[DATABASE] Error adding event photo: ${error.message}`);
         throw error;
     }
 };
 
-exports.getIssuePhotos = async (issueId) => {
+exports.getEventPhotos = async (eventId) => {
     try {
-        const result = await pool.query('SELECT * FROM issue_photos WHERE issue_id = $1', [issueId]);
+        const result = await pool.query('SELECT * FROM event_images WHERE event_id = $1', [eventId]);
         return result.rows;
     } catch (error) {
-        console.error(`[DATABASE] Error getting issue photos: ${error.message}`);
+        console.error(`[DATABASE] Error getting event photos: ${error.message}`);
         throw error;
     }
 };
 
-exports.deleteIssuePhoto = async (id) => {
+exports.deleteEventPhoto = async (id) => {
     try {
-        const result = await pool.query('DELETE FROM issue_photos WHERE id = $1 RETURNING *', [id]);
+        const result = await pool.query('DELETE FROM event_images WHERE id = $1 RETURNING *', [id]);
         return result.rows[0];
     } catch (error) {
-        console.error(`[DATABASE] Error deleting issue photo: ${error.message}`);
-        throw error;
-    }
-};
-
-// Logs
-exports.addIssueLog = async (log) => {
-    try {
-        const {
-            issue_id,
-            old_status_id,
-            new_status_id,
-            changed_by,
-            comment
-        } = log;
-        const result = await pool.query(
-            'INSERT INTO issue_logs (issue_id, old_status_id, new_status_id, changed_by, comment) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-            [issue_id, old_status_id, new_status_id, changed_by, comment]
-        );
-        return result.rows[0];
-    } catch (error) {
-        console.error(`[DATABASE] Error adding issue log: ${error.message}`);
-        throw error;
-    }
-};
-
-exports.getIssueLogs = async (issueId) => {
-    try {
-        const result = await pool.query('SELECT * FROM issue_logs WHERE issue_id = $1', [issueId]);
-        return result.rows;
-    } catch (error) {
-        console.error(`[DATABASE] Error getting issue logs: ${error.message}`);
+        console.error(`[DATABASE] Error deleting event photo: ${error.message}`);
         throw error;
     }
 };

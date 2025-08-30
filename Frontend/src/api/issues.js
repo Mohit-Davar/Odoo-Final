@@ -17,7 +17,7 @@ export const getIssueByProfile = async () => {
 };
 
 export const createIssue = async (issue) => {
-    const { data } = await api.post('/issues', issue);
+    const { data } = await api.post('/events', issue);
     return data;
 };
 

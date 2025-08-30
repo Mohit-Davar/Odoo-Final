@@ -1,31 +1,31 @@
 const flag = require('../database/flag.model');
 
 // Flags
-exports.flagIssue = async (req, res) => {
+exports.flagEvent = async (req, res) => {
     try {
-        const issueFlag = await flag.flagIssue(req.user.id, req.body);
-        res.status(201).json(issueFlag);
+        const eventFlag = await flag.flagEvent(req.user.id, req.body);
+        res.status(201).json(eventFlag);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
 
-exports.getIssueFlags = async (req, res) => {
+exports.getEventFlags = async (req, res) => {
     try {
-        const issueFlags = await flag.getIssueFlags(req.params.issueId);
-        res.status(200).json(issueFlags);
+        const eventFlags = await flag.getEventFlags(req.params.eventId);
+        res.status(200).json(eventFlags);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
 
-exports.updateIssueFlag = async (req, res) => {
+exports.updateEventFlag = async (req, res) => {
     try {
-        const issueFlag = await flag.updateIssueFlag(req.params.id, req.body);
-        if (!issueFlag) {
-            return res.status(404).json({ message: 'Issue flag not found' });
+        const eventFlag = await flag.updateEventFlag(req.params.id, req.body);
+        if (!eventFlag) {
+            return res.status(404).json({ message: 'Event flag not found' });
         }
-        res.status(200).json(issueFlag);
+        res.status(200).json(eventFlag);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
