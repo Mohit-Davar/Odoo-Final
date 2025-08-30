@@ -11,7 +11,7 @@ export const getEventsByProfile = async () => {
 };
 
 export const getIssueById = async (id) => {
-    const { data } = await api.get(`/issues/${id}`);
+    const { data } = await api.get(`/events/${id}`);
     return data;
 };
 
@@ -26,7 +26,7 @@ export const createIssue = async (issue) => {
 };
 
 export const updateIssue = async (id, issue) => {
-    const { data } = await api.put(`/issues/${id}`, issue);
+    const { data } = await api.put(`/events/edit/${id}`, issue);
     return data;
 };
 

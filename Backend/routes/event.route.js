@@ -20,6 +20,9 @@ router.route('/:id')
     .put(event.updateEvent)
     .delete(event.deleteEvent);
 
+router.route("/edit/:id")
+    .put(event.updateEvent)
+
 // Photos
 router.route('/photos')
     .post(event.addEventPhoto);
