@@ -14,6 +14,7 @@ import { Bell, Calendar, LogOut, PlusCircle, Ticket, User } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getUserProfile } from "@/api/users";
+import { Link } from "react-router-dom";
 
 export const Logo = () => {
   const navigate = useNavigate();
@@ -34,6 +35,8 @@ export default function Header() {
   });
 
   const navigate = useNavigate();
+
+
 
   const renderAuthContent = () => {
     // Show a loading state with a skeleton avatar
@@ -72,8 +75,8 @@ export default function Header() {
             <DropdownItem key="profile" startContent={<User className="w-4 h-4" />} textValue="Profile">
               Profile
             </DropdownItem>
-            <DropdownItem as={Link} to="/events/new" key="create_event" startContent={<PlusCircle className="w-4 h-4" />} textValue="Create New Event">
-              Create New Event
+            <DropdownItem key="create_event" startContent={<PlusCircle className="w-4 h-4" />} textValue="Create New Event">
+            <Link to="/events/new">Create New Event</Link> 
             </DropdownItem>
             <DropdownItem key="my_events" startContent={<Calendar className="w-4 h-4" />} textValue="My Events">
               My Events

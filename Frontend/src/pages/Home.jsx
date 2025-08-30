@@ -1,7 +1,11 @@
 import EventCard from '@/components/home/EventCard';
+import { useState } from 'react';
 import {
     Pagination
 } from '@heroui/react';
+
+import EventDetailModal from '@/components/home/ModalEvent';
+
 
 
 const HomePage = () => {
@@ -92,34 +96,56 @@ const HomePage = () => {
         }
     ];
 
+    const [selectedEvent, setSelectedEvent] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const handleCardClick = (event) => {
+        setSelectedEvent(event);
+        setIsModalOpen(true);
+    };
+
     return (
-        <div className="bg-background p-6 min-h-screen text-white">
-            <div className="space-y-6 mx-auto max-w-7xl">
+<>
+            {/* Main Content */}
+            <div className="bg-background p-6 min-h-screen text-white">
+                <div className="space-y-6 mx-auto max-w-7xl">
+                    {/* Events Grid */}
+                    <div className="gap-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+                        {events.length > 0 ? (
+                            events.map((event) => (
+                                <EventCard 
+                                    key={event.id} 
+                                    event={event} 
+                                    onClick={() => handleCardClick(event)}
+                                />
+                            ))
+                        ) : (
+                            <div className="col-span-full py-10 text-zinc-500 text-center">
+                                No events found.
+                            </div>
+                        )}
+                    </div>
 
-                {/* Events Grid */}
-                <div className="gap-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-                    {events.length > 0 ? (
-                        events.map((event) => (
-                            <EventCard key={event.id} event={event} />
-                        ))
-                    ) : (
-                        <div className="col-span-full py-10 text-zinc-500 text-center">
-                            No events found.
-                        </div>
-                    )}
-                </div>
-
-                {/* Load More */}
-                <div className="flex justify-center pt-">
-                    <Pagination
-                        showControls={true}
-                        loop={true}
-                        variant='faded'
-                        initialPage={1}
-                        total={10} />
+                    {/* Load More */}
+                    <div className="flex justify-center pt-6">
+                        <Pagination
+                            showControls={true}
+                            loop={true}
+                            variant='faded'
+                            initialPage={1}
+                            total={10} 
+                        />
+                    </div>
                 </div>
             </div>
-        </div>
+
+            {/* Modal - positioned outside main content but inside component */}
+            <EventDetailModal 
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                event={selectedEvent}
+            />
+        </>
     );
 };
 
