@@ -17,13 +17,17 @@ const getCategoryColor = (category) => {
     return colors[category] || 'bg-gray-600';
 };
 
-const EventCard = ({ event }) => {
+const EventCard = ({ event, onClick }) => {
     const truncatedDescription = event.description.length > 100
         ? `${event.description.slice(0, 100)}...`
         : event.description;
 
     return (
-        <Card className="bg-zinc-900 border border-zinc-800 hover:border-zinc-700 transition-all duration-300">
+        <Card 
+            className="bg-zinc-900 border border-zinc-800 hover:border-zinc-700 transition-all duration-300 cursor-pointer"
+            isPressable
+            onPress={() => onClick?.(event)}
+        >
             <CardHeader className="p-0">
                 <div className="relative rounded-t-lg w-full h-48 overflow-hidden">
                     <img

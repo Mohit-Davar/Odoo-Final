@@ -21,7 +21,7 @@ export default function App() {
           <Route path='/profile' element={<Profile />} />
           <Route path='/attendes' element={<Attendes />} />
         <Route path='/events/new' element={<CreateIssue />} />
-          <Route path="/events/edit/:eventId" element={<CreateIssue />} />
+        <Route path="/events/edit/:eventId" element={<CreateIssue />} />
         <Route path='/issues' element={<MyIssues />} />
         </Route>
         <Route path='/login' element={<Login />} />
