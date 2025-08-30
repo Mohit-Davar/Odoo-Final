@@ -11,6 +11,7 @@ import CreateIssue from './pages/CreateEvent';
 import MyIssues from './pages/myIssues';
 import LandingPage from './pages/Landing';
 import Attendes from './pages/Attendes';
+import EventHiveBooking from './pages/JoinEvent';
 
 export default function App() {
   return (
@@ -22,6 +23,7 @@ export default function App() {
           <Route path='/attendes' element={<Attendes />} />
         <Route path='/events/new' element={<CreateIssue />} />
         <Route path="/events/edit/:eventId" element={<CreateIssue />} />
+        <Route path="/register/event" element={<EventHiveBooking />} />
         <Route path='/issues' element={<MyIssues />} />
         </Route>
         <Route path='/login' element={<Login />} />
