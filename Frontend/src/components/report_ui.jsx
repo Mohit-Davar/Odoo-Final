@@ -19,6 +19,7 @@ import {
   Shield,
   AlertTriangle
 } from 'lucide-react';
+import { Select, SelectItem } from '@heroui/react';
 
 // Header Component
 export const Header = () => (
@@ -118,34 +119,30 @@ export const DropdownField = ({
       {label} {required && <span className="text-red-500">*</span>}
     </label>
     <div className="relative">
-      <div className="top-1/2 left-4 absolute -translate-y-1/2 transform">
-        <Tag className="w-5 h-5 text-black/60" />
-      </div>
-      <select
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        disabled={loading || !options || options.length === 0}
-        className={`w-full pl-12 pr-4 py-4 bg-white/30 backdrop-blur-sm rounded-2xl border ${error ? 'border-red-500/50' : 'border-white/30'
+      <Select
+        selectedKey={value} // Use selectedKey for controlled component
+        onSelectionChange={(selectedKeys) => { // selectedKeys will be a Set
+          const selectedKey = selectedKeys.values().next().value; // Get the first (and only) value from the Set
+          onChange(selectedKey); // Pass the extracted key to field.onChange
+        }}
+        isDisabled={loading || !options || options.length === 0}
+        placeholder="Select category" // Use placeholder prop
+        className={`w-full p-4  bg-white/30 backdrop-blur-sm rounded-2xl border ${error ? 'border-red-500/50' : 'border-white/30'
           } text-black focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all duration-200 font-medium appearance-none cursor-pointer`}
       >
         {loading ? (
-          <option value="">Loading categories...</option>
+          <SelectItem key="loading" textValue="Loading categories...">Loading categories...</SelectItem>
         ) : options && options.length > 0 ? (
-          [<option value="" key="">Select a category</option>,
+          [<SelectItem key="" textValue="Select a category">Select a category</SelectItem>,
           ...options.map((option) => (
-            <option key={option.id} value={option.id}>
-              {option.name}
-            </option>
+            <SelectItem key={option.id} value={option.id} textValue={option.category}>
+              {option.category}
+            </SelectItem>
           ))]
         ) : (
-          <option value="">No categories available</option>
+          <SelectItem key="no-categories" textValue="No categories available">No categories available</SelectItem>
         )}
-      </select>
-      <div className="top-1/2 right-4 absolute -translate-y-1/2 pointer-events-none transform">
-        <svg className="w-5 h-5 text-black/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-        </svg>
-      </div>
+      </Select>
     </div>
     {error && <p className="font-medium text-red-500 text-sm">{error}</p>}
   </div>
