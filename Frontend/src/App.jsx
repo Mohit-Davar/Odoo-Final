@@ -6,11 +6,11 @@ import Login from '@/pages/Login';
 import NotFound from '@/pages/NotFound';
 import Signup from '@/pages/Signup';
 import HomePage from './pages/Home';
-import Profile from './pages/profile';
-import CreateIssue from './pages/CreateEvent';
-import MyIssues from './pages/myIssues';
+import Profile from './pages/Profile';
+import CreateEvent from './pages/CreateEvent';
 import LandingPage from './pages/Landing';
 import Attendes from './pages/Attendes';
+import MyEvents from './pages/MyEvents';
 
 export default function App() {
   return (
@@ -19,14 +19,14 @@ export default function App() {
         <Route element={<UserLayout />}>
           <Route path='/home' element={<HomePage />} />
           <Route path='/profile' element={<Profile />} />
-          <Route path='/attendes' element={<Attendes />} />
-        <Route path='/events/new' element={<CreateIssue />} />
-        <Route path="/events/edit/:eventId" element={<CreateIssue />} />
-        <Route path='/issues' element={<MyIssues />} />
+          <Route path='/attendes/:id' element={<Attendes />} />
+          <Route path='/myevents' element={<MyEvents/>}/>
+        <Route path='/events/new' element={<CreateEvent />} />
+        <Route path="/events/edit/:eventId" element={<CreateEvent />} />
         </Route>
         <Route path='/login' element={<Login />} />
-        <Route path='/' element={<LandingPage />} />
         <Route path='/signup' element={<Signup />} />
+        <Route path='/' element={<LandingPage />} />
         <Route path='*' element={<NotFound />} />
       </Routes>
       <Toast />

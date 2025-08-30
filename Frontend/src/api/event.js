@@ -5,6 +5,10 @@ export const getEvents = async () => {
     return data;
 };
 
+export const getEventsByProfile = async () => {
+    const { data } = await api.get('/events/profile');
+    return data;
+};
 
 export const getIssueById = async (id) => {
     const { data } = await api.get(`/issues/${id}`);

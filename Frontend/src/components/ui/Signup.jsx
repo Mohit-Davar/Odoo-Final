@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import {
   Header, FilterBar, IssueGrid, Pagination, Modal, Toast, Footer
 } from '@/components/ui.jsx';
-import { getIssues } from '@/api/event';
+import { getIssues } from '@/api/Event';
 import { flagIssue } from '@/api/flags';
 import { useNavigate } from 'react-router-dom';
 

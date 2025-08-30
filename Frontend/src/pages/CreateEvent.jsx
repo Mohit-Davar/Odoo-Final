@@ -3,9 +3,8 @@ import { useForm, Controller } from 'react-hook-form';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import {
   FormCard, DropdownField, ToggleField,
-  ImageUploadSection, SubmitButton, Toast, Footer, StatusBadge
-} from '@/components/report_ui';
-import { ArrowLeft, Calendar as CalendarIcon, MapPin, Navigation, Search, Loader2, X, Clock } from 'lucide-react';
+  ImageUploadSection, SubmitButton, Toast, Footer} from '@/components/report_ui';
+import { ArrowLeft, Calendar as CalendarIcon, MapPin, Navigation, Search, Loader2, Clock } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { createIssue, getIssueCategories, getIssueById, updateIssue } from '@/api/event';
 import { DayPicker } from 'react-day-picker';
@@ -437,19 +436,19 @@ const CreateEditEvent = () => {
   // });
 
   const categoriesQuery = {
-    isLoading : false,
-    data : [
-  { id: 1, category: 'Conference' },
-  { id: 2, category: 'Workshop' },
-  { id: 3, category: 'Seminar' },
-  { id: 4, category: 'Meetup' },
-  { id: 5, category: 'Webinar' },
-  { id: 6, category: 'Festival' },
-  { id: 7, category: 'Concert' },
-  { id: 8, category: 'Exhibition' },
-  { id: 9, category: 'Networking' },
-  { id: 10, category: 'Competition' },
-]
+    isLoading: false,
+    data: [
+      { id: 1, category: 'Conference' },
+      { id: 2, category: 'Workshop' },
+      { id: 3, category: 'Seminar' },
+      { id: 4, category: 'Meetup' },
+      { id: 5, category: 'Webinar' },
+      { id: 6, category: 'Festival' },
+      { id: 7, category: 'Concert' },
+      { id: 8, category: 'Exhibition' },
+      { id: 9, category: 'Networking' },
+      { id: 10, category: 'Competition' },
+    ]
   }
 
   // Fetch existing event data if in edit mode
@@ -664,8 +663,8 @@ const CreateEditEvent = () => {
     <div className="bg-secondary min-h-screen font-montserrat">
       <main className="bg-secondary-text mx-auto px-4 py-8 max-w-4xl container">
         <FormCard>
-          <button 
-            onClick={() => navigate('/home')} 
+          <button
+            onClick={() => navigate('/home')}
             className="flex items-center gap-2 bg-white/20 hover:bg-white/30 px-4 py-2 rounded-full text-black transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -923,102 +922,102 @@ const CreateEditEvent = () => {
             />
 
             {/* Image Upload */}
-<Controller
-  name="images"
-  control={control}
-  render={({ field }) => (
-    <ImageUploadSection
-      images={field.value}
-      onUpload={(files) => {
-        const maxSize = 5 * 1024 * 1024;
-        const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
-        const fileList = Array.from(files);
-        const currentImages = field.value || [];
-        
-        // Check if adding new files would exceed the limit
-        const remainingSlots = 5 - currentImages.length;
-        if (remainingSlots <= 0) {
-          showToast('Maximum 5 images allowed. Remove some images first.', 'error');
-          return;
-        }
+            <Controller
+              name="images"
+              control={control}
+              render={({ field }) => (
+                <ImageUploadSection
+                  images={field.value}
+                  onUpload={(files) => {
+                    const maxSize = 5 * 1024 * 1024;
+                    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+                    const fileList = Array.from(files);
+                    const currentImages = field.value || [];
 
-        // Limit files to remaining slots
-        const filesToProcess = fileList.slice(0, remainingSlots);
-        
-        if (fileList.length > remainingSlots) {
-          showToast(`Only ${remainingSlots} more images can be added (${fileList.length - remainingSlots} files skipped)`, 'warning');
-        }
+                    // Check if adding new files would exceed the limit
+                    const remainingSlots = 5 - currentImages.length;
+                    if (remainingSlots <= 0) {
+                      showToast('Maximum 5 images allowed. Remove some images first.', 'error');
+                      return;
+                    }
 
-        // Validate each file first
-        const validFiles = [];
-        const invalidFiles = [];
+                    // Limit files to remaining slots
+                    const filesToProcess = fileList.slice(0, remainingSlots);
 
-        filesToProcess.forEach(file => {
-          if (!allowedTypes.includes(file.type)) {
-            invalidFiles.push(`${file.name}: Invalid format`);
-          } else if (file.size > maxSize) {
-            invalidFiles.push(`${file.name}: File too large (max 5MB)`);
-          } else {
-            validFiles.push(file);
-          }
-        });
+                    if (fileList.length > remainingSlots) {
+                      showToast(`Only ${remainingSlots} more images can be added (${fileList.length - remainingSlots} files skipped)`, 'warning');
+                    }
 
-        // Show errors for invalid files
-        if (invalidFiles.length > 0) {
-          showToast(`Invalid files: ${invalidFiles.join(', ')}`, 'error');
-        }
+                    // Validate each file first
+                    const validFiles = [];
+                    const invalidFiles = [];
 
-        // Process valid files
-        if (validFiles.length === 0) return;
+                    filesToProcess.forEach(file => {
+                      if (!allowedTypes.includes(file.type)) {
+                        invalidFiles.push(`${file.name}: Invalid format`);
+                      } else if (file.size > maxSize) {
+                        invalidFiles.push(`${file.name}: File too large (max 5MB)`);
+                      } else {
+                        validFiles.push(file);
+                      }
+                    });
 
-        let processedCount = 0;
-        const newImages = [];
+                    // Show errors for invalid files
+                    if (invalidFiles.length > 0) {
+                      showToast(`Invalid files: ${invalidFiles.join(', ')}`, 'error');
+                    }
 
-        validFiles.forEach((file, index) => {
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            const imageData = {
-              id: `${Date.now()}_${Math.random().toString(36).substr(2, 9)}_${index}`,
-              name: file.name,
-              size: file.size,
-              type: file.type,
-              base64: e.target.result,
-              preview: e.target.result,
-            };
-            
-            newImages.push(imageData);
-            processedCount++;
+                    // Process valid files
+                    if (validFiles.length === 0) return;
 
-            // Update field value when all files are processed
-            if (processedCount === validFiles.length) {
-              const updatedImages = [...currentImages, ...newImages];
-              setValue('images', updatedImages);
-              
-              if (validFiles.length > 0) {
-                showToast(`${validFiles.length} image(s) uploaded successfully`, 'success');
-              }
-            }
-          };
+                    let processedCount = 0;
+                    const newImages = [];
 
-          reader.onerror = () => {
-            showToast(`Error reading file: ${file.name}`, 'error');
-            processedCount++;
-          };
+                    validFiles.forEach((file, index) => {
+                      const reader = new FileReader();
+                      reader.onload = (e) => {
+                        const imageData = {
+                          id: `${Date.now()}_${Math.random().toString(36).substr(2, 9)}_${index}`,
+                          name: file.name,
+                          size: file.size,
+                          type: file.type,
+                          base64: e.target.result,
+                          preview: e.target.result,
+                        };
 
-          reader.readAsDataURL(file);
-        });
-      }}
-      onRemove={(imageId) => {
-        const updatedImages = field.value.filter(img => img.id !== imageId);
-        setValue('images', updatedImages);
-        showToast('Image removed', 'success');
-      }}
-      fileInputRef={fileInputRef}
-      maxImages={5}
-      currentCount={field.value?.length || 0}
-    />
-  )}
-/>
+                        newImages.push(imageData);
+                        processedCount++;
+
+                        // Update field value when all files are processed
+                        if (processedCount === validFiles.length) {
+                          const updatedImages = [...currentImages, ...newImages];
+                          setValue('images', updatedImages);
+
+                          if (validFiles.length > 0) {
+                            showToast(`${validFiles.length} image(s) uploaded successfully`, 'success');
+                          }
+                        }
+                      };
+
+                      reader.onerror = () => {
+                        showToast(`Error reading file: ${file.name}`, 'error');
+                        processedCount++;
+                      };
+
+                      reader.readAsDataURL(file);
+                    });
+                  }}
+                  onRemove={(imageId) => {
+                    const updatedImages = field.value.filter(img => img.id !== imageId);
+                    setValue('images', updatedImages);
+                    showToast('Image removed', 'success');
+                  }}
+                  fileInputRef={fileInputRef}
+                  maxImages={5}
+                  currentCount={field.value?.length || 0}
+                />
+              )}
+            />
 
             {/* Submit Button */}
             <SubmitButton

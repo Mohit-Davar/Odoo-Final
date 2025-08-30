@@ -47,12 +47,12 @@ exports.createEvent = async (userID, eventData) => {
     }
 };
 
-exports.getEvents = async () => {
+
 exports.getEvents = async () => {
     try {
         const result = await pool.query(`
             SELECT 
-                e.id AS event_id,
+                e.id,
                 e.user_id,
                 e.title,
                 e.description,
@@ -86,48 +86,61 @@ exports.getEvents = async () => {
                 e.created_at DESC;
         `);
 
-        console.log(result.rows[0]);
         return result.rows;
     } catch (error) {
-        console.error(`[DATABASE] Error getting events: ${error.message}`);
         console.error(`[DATABASE] Error getting events: ${error.message}`);
         throw error;
     }
 };
 
 
-exports.getIssueByProfile = async (userId) => {
+exports.getEventsByProfile = async (userID) => {
     try {
         const result = await pool.query(`
             SELECT 
                 e.id,
+                e.user_id,
                 e.title,
                 e.description,
-                e.location as address,
+                e.location,
+                ST_X(e.coordinates::geometry) AS longitude,
+                ST_Y(e.coordinates::geometry) AS latitude,
                 e.start_datetime,
                 e.end_datetime,
+                ec.category AS event_category,
+                es.status AS event_status,
                 e.created_at,
-                ST_AsGeoJSON(e.coordinates) AS geojson,
-                ec.category AS category,
-                es.status AS status,
-                u.id AS user_id,
-                u.name AS user_name,
-                up.avatar_url AS user_avatar,
-                (SELECT image_url FROM event_images WHERE event_id = e.id AND is_cover = true LIMIT 1) AS cover_image_url
-            FROM events e
-            JOIN event_categories ec ON e.category_id = ec.id
-            JOIN event_status es ON e.status = es.id
-            LEFT JOIN users u ON u.id = e.user_id
-            LEFT JOIN user_profiles up ON up.user_id = u.id
-            WHERE e.user_id = $1
-            ORDER BY e.created_at DESC;
-        `, [userId]);
+                ARRAY_AGG(
+                    JSON_BUILD_OBJECT(
+                        'image_id', ei.id,
+                        'image_url', ei.image_url,
+                        'is_cover', ei.is_cover,
+                        'uploaded_at', ei.uploaded_at
+                    ) ORDER BY ei.uploaded_at DESC
+                ) AS images
+            FROM 
+                events e
+            JOIN 
+                event_categories ec ON e.category = ec.id
+            JOIN 
+                event_status es ON e.status = es.id
+            LEFT JOIN 
+                event_images ei ON e.id = ei.event_id
+            WHERE 
+                e.user_id = $1
+            GROUP BY 
+                e.id, ec.category, es.status
+            ORDER BY 
+                e.created_at DESC
+        `, [userID]);
+
         return result.rows;
     } catch (error) {
-        console.error(`[DATABASE] Error getting events by profile: ${error.message}`);
+        console.error(`[DATABASE] Error getting events: ${error.message}`);
         throw error;
     }
 };
+
 
 exports.getEventById = async (id) => {
     try {
@@ -135,9 +148,9 @@ exports.getEventById = async (id) => {
             `SELECT e.*, ST_X(e.coordinates::geometry) as lon, ST_Y(e.coordinates::geometry) as lat
              FROM events e WHERE e.id = $1`, [id]);
         if (eventResult.rows.length === 0) return null;
-        
+
         const event = eventResult.rows[0];
-        
+
         const response = {
             id: event.id,
             title: event.title,
@@ -155,7 +168,7 @@ exports.getEventById = async (id) => {
             id: img.id,
             preview: img.image_url,
         }));
-        
+
         return response;
     } catch (error) {
         console.error(`[DATABASE] Error getting event by ID: ${error.message}`);
@@ -192,7 +205,7 @@ exports.updateEvent = async (id, eventData) => {
              WHERE id = $10 RETURNING *`,
             [category_id, title, description, location.x, location.y, address, start_date, end_date, status_id, id]
         );
-        
+
         await client.query('DELETE FROM event_images WHERE event_id = $1', [id]);
         if (images && images.length > 0) {
             const imagePromises = images.map((image, index) => {

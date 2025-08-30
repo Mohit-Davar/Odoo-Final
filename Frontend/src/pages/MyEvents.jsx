@@ -1,23 +1,16 @@
-import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import EventCard from '@/components/home/EventCard';
-import EventDetailModal from '@/components/home/ModalEvent';
-import { getEvents } from '@/api/event';
+import { getEventsByProfile } from '@/api/event';
 import { Button, Card, CardBody, Spinner } from '@heroui/react';
+import { useNavigate } from 'react-router-dom';
 
-const HomePage = () => {
+const MyEvents = () => {
     const { data: events, error, isLoading, isError } = useQuery({
-        queryKey: ['events'],
-        queryFn: getEvents,
+        queryKey: ['eventsProfile'],
+        queryFn: getEventsByProfile,
     });
 
-    const [selectedEvent, setSelectedEvent] = useState(null);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-
-    const handleCardClick = (event) => {
-        setSelectedEvent(event);
-        setIsModalOpen(true);
-    };
+    const navigate = useNavigate();
 
     // Loading state
     if (isLoading) {
@@ -25,7 +18,7 @@ const HomePage = () => {
             <div className="flex justify-center items-center bg-black min-h-screen">
                 <div className="text-center">
                     <Spinner size="lg" color="primary" />
-                    <p className="mt-4 text-white">Loading feed...</p>
+                    <p className="mt-4 text-white">Loading Events...</p>
                 </div>
             </div>
         );
@@ -37,7 +30,7 @@ const HomePage = () => {
             <div className="flex justify-center items-center bg-black min-h-screen">
                 <Card className="bg-zinc-900 border border-zinc-800 max-w-md">
                     <CardBody className="p-8 text-center">
-                        <p className="mb-4 text-red-400">Error loading feed</p>
+                        <p className="mb-4 text-red-400">Error loading events</p>
                         <p className="text-zinc-400 text-sm">{error?.message}</p>
                         <Button
                             color="primary"
@@ -64,7 +57,7 @@ const HomePage = () => {
                                 <EventCard
                                     key={event.id}
                                     event={event}
-                                    onClick={() => handleCardClick(event)}
+                                    onClick={() => navigate("/events/edit/" + event.id)}
                                 />
                             ))
                         ) : (
@@ -75,15 +68,8 @@ const HomePage = () => {
                     </div>
                 </div>
             </div>
-
-            {/* Modal - positioned outside main content but inside component */}
-            <EventDetailModal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                event={selectedEvent}
-            />
         </>
     );
 };
 
-export default HomePage;
+export default MyEvents;

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Navigation, HeroSection, AboutSection, ServicesSection, FeaturesGrid, StatisticsSection, FinalCTASection } from '@/components/HomeComponent.jsx';
+import { Navigation, HeroSection, AboutSection, ServicesSection, FeaturesGrid, StatisticsSection, FinalCTASection } from '@/components/Landing.jsx';
 import { ScrollProgress, CustomStyles, LoadingAnimation } from '@/components/ui/home_ui.jsx';
 import Footer from '@/components/Footer';
 
@@ -22,7 +22,7 @@ export default function LandingPage() {
   }
 
   return (
-    <div className="bg-black text-white overflow-x-hidden">
+    <div className="bg-black overflow-x-hidden text-white">
       <CustomStyles />
       <ScrollProgress />
       <Navigation />

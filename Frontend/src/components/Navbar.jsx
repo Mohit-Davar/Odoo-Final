@@ -16,14 +16,13 @@ import { useQuery } from "@tanstack/react-query";
 import { getUserProfile } from "@/api/users";
 
 export const Logo = () => {
-  const navigate = useNavigate();
   return (
-    <div onClick={() => navigate("/")}>
+    <Link to="/home">
       <h1 className="mb-2 font-bold text-white text-3xl">
         Event<span className="text-red-500">Hive</span>
       </h1>
       <div className="bg-gradient-to-r from-red-500 to-red-600 mx-auto w-16 h-0.5"></div>
-    </div>
+    </Link>
   );
 };
 
@@ -73,14 +72,18 @@ export default function Header() {
             </DropdownItem>
             <DropdownItem key="profile" startContent={<User className="w-4 h-4" />} textValue="Profile">
               <Link to="/profile">
-              Profile
+                Profile
               </Link>
             </DropdownItem>
             <DropdownItem key="create_event" startContent={<PlusCircle className="w-4 h-4" />} textValue="Create New Event">
-            <Link to="/events/new">Create New Event</Link> 
+              <Link to="/events/new">
+                Create New Event
+              </Link>
             </DropdownItem>
             <DropdownItem key="my_events" startContent={<Calendar className="w-4 h-4" />} textValue="My Events">
-              My Events
+              <Link to="/myevents">
+                My Events
+              </Link>
             </DropdownItem>
             <DropdownItem key="my_bookings" startContent={<Ticket className="w-4 h-4" />} textValue="My Bookings">
               My Bookings

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { getUserProfile, updateUserProfile } from '@/api/users.js';
 import { useQuery } from '@tanstack/react-query';
 import {
@@ -11,38 +11,21 @@ import {
   Avatar,
   Divider,
   Spinner,
-  Breadcrumbs,
-  BreadcrumbItem
 } from '@heroui/react';
 import {
   Edit3,
-  Save,
-  X,
   User,
-  MapPin,
   Phone,
-  Calendar,
   Upload,
 } from 'lucide-react';
 
 const Profile = () => {
   const [isEditing, setIsEditing] = useState(false);
-  const [profileData, setProfileData] = useState({
-    avatar_url: '',
-    name: 'Sarah Johnson',
-    bio: 'Creative designer passionate about creating beautiful, user-centered experiences. Always learning and growing.',
-    date_of_birth: '1992-06-15',
-    phone_number: '+1 (555) 123-4567',
-    email: 'sarah.johnson@example.com',
-    address: '123 Creative Street, Suite 456',
-    city: 'San Francisco',
-    postal_code: '94102',
-    country: 'United States'
-  });
+  const [profileData, setProfileData] = useState();
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ['userProfile'],
-    queryFn: getUserProfile
+    queryFn: getUserProfile,
   });
 
   const [formData, setFormData] = useState(profileData);
@@ -86,9 +69,9 @@ const Profile = () => {
   };
 
   const handleInputChange = (field, value) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
@@ -104,9 +87,9 @@ const Profile = () => {
       const reader = new FileReader();
       reader.onloadend = () => {
         setAvatarPreview(reader.result);
-        setFormData(prev => ({
+        setFormData((prev) => ({
           ...prev,
-          avatar_url: reader.result
+          avatar_url: reader.result,
         }));
       };
       reader.readAsDataURL(file);
@@ -146,6 +129,11 @@ const Profile = () => {
     );
   }
 
+  if (!profileData) {
+    return null;
+  }
+
+
   const ProfileViewCard = () => (
     <Card className="bg-zinc-900 border border-zinc-800">
       <CardHeader className="pb-0">
@@ -167,7 +155,7 @@ const Profile = () => {
             variant="flat"
             size="sm"
             startContent={<Edit3 size={16} />}
-            onClick={handleEdit}
+            onPress={handleEdit}
             className="bg-red-600/20 hover:bg-red-600/30 border border-red-600/30 text-red-400"
           >
             Edit Profile
@@ -190,7 +178,7 @@ const Profile = () => {
             <div className="flex items-center gap-3">
               <Phone size={16} className="text-zinc-500" />
               <span className="text-zinc-300">{profileData.phone_number}</span>
-            </div>x
+            </div>
           </div>
         </div>
       </CardBody>
@@ -201,27 +189,25 @@ const Profile = () => {
     <Card className="bg-zinc-900 border border-zinc-800">
       <CardHeader>
         <div className="flex justify-between items-center w-full">
-          <h2 className="font-bold text-white text-xl">Edit Profile</h2>
+          <h2 className="font-bold text-white text-xl">Edit</h2>
           <div className="flex gap-2">
             <Button
               color="default"
               variant="flat"
               size="sm"
-              startContent={<X size={16} />}
-              onClick={handleCancel}
-              className="bg-zinc-800 hover:bg-zinc-700 text-zinc-300"
+              onPress={handleCancel}
+              className="bg-zinc-800 text-zinc-300"
             >
               Cancel
             </Button>
             <Button
               color="primary"
               size="sm"
-              startContent={<Save size={16} />}
-              onClick={handleSave}
+              onPress={handleSave}
               isLoading={isSaving}
-              className="bg-red-600 hover:bg-red-700 text-white"
+              className="bg-red-600 text-white"
             >
-              {isSaving ? 'Saving...' : 'Save Changes'}
+              {isSaving ? 'Saving...' : 'Save'}
             </Button>
           </div>
         </div>
@@ -266,12 +252,6 @@ const Profile = () => {
               label="Full Name"
               value={formData.name}
               onChange={(e) => handleInputChange('name', e.target.value)}
-              classNames={{
-                base: "max-w-full",
-                mainWrapper: "h-full",
-                input: "text-white",
-                inputWrapper: "bg-zinc-800 border border-zinc-700 hover:border-zinc-600 focus-within:border-red-600"
-              }}
             />
 
             <Input
@@ -279,12 +259,6 @@ const Profile = () => {
               type="email"
               value={formData.email}
               onChange={(e) => handleInputChange('email', e.target.value)}
-              classNames={{
-                base: "max-w-full",
-                mainWrapper: "h-full",
-                input: "text-white",
-                inputWrapper: "bg-zinc-800 border border-zinc-700 hover:border-zinc-600 focus-within:border-red-600"
-              }}
             />
           </div>
 
@@ -293,52 +267,22 @@ const Profile = () => {
             value={formData.bio}
             onChange={(e) => handleInputChange('bio', e.target.value)}
             minRows={3}
-            classNames={{
-              base: "max-w-full",
-              input: "text-white",
-              inputWrapper: "bg-zinc-800 border border-zinc-700 hover:border-zinc-600 focus-within:border-red-600"
-            }}
           />
 
-          <div className="gap-4 grid grid-cols-1 md:grid-cols-2">
+          <div className="gap-4 grid grid-cols-1">
             <Input
               label="Phone Number"
               value={formData.phone_number}
               onChange={(e) => handleInputChange('phone_number', e.target.value)}
-              classNames={{
-                base: "max-w-full",
-                mainWrapper: "h-full",
-                input: "text-white",
-                inputWrapper: "bg-zinc-800 border border-zinc-700 hover:border-zinc-600 focus-within:border-red-600"
-              }}
             />
           </div>
         </div>
-
       </CardBody>
     </Card>
   );
 
   return (
-    <div className="bg-black min-h-screen">
-      {/* Breadcrumbs */}
-      {/* <div className="bg-zinc-900 px-6 py-3 border-zinc-800 border-b">
-        <div className="mx-auto max-w-4xl">
-          <Breadcrumbs
-            size="sm"
-            classNames={{
-              list: "bg-transparent",
-              item: "text-zinc-400 data-[current=true]:text-white",
-              separator: "text-zinc-600"
-            }}
-          >
-            <BreadcrumbItem>Account</BreadcrumbItem>
-            <BreadcrumbItem>Profile</BreadcrumbItem>
-          </Breadcrumbs>
-        </div>
-      </div> */}
-
-      {/* Main Content */}
+    <div className="min-h-screen">
       <main className="mx-auto px-6 py-8 max-w-4xl">
         <div className="space-y-6">
           {isEditing ? <ProfileEditForm /> : <ProfileViewCard />}

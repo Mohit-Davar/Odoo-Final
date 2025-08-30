@@ -21,9 +21,10 @@ exports.getEvents = async (req, res) => {
 
 exports.getEventByProfile = async (req, res) => {
     try {
-        const events = await eventModel.getEventByProfile(req.user.id);
+        const events = await eventModel.getEventsByProfile(req.user.id);
         res.status(200).json(events);
     } catch (error) {
+        console.log(error)
         res.status(500).json({ message: error.message });
     }
 };
