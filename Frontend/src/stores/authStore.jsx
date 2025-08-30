@@ -17,6 +17,20 @@ export const useAuthStore = create((set, get) => {
         return config;
     });
 
+    const logout = async () => {
+        try {
+            // Optional: hit the server to clear session/cookies
+            await axios.post(`${import.meta.env.VITE_BASE_URL}/auth/logout`, {}, { withCredentials: true });
+        } catch (err) {
+            console.error('Logout API error:', err);
+        } finally {
+            // Clear token locally
+            set({ accessToken: null });
+            // Redirect to login
+            window.location.href = '/login';
+        }
+    };
+
     // Response Interceptor with auto refresh
     api.interceptors.response.use(
         (response) => response,
@@ -47,5 +61,6 @@ export const useAuthStore = create((set, get) => {
     return {
         accessToken: null,
         setAccessToken,
+        logout
     };
 });

@@ -59,7 +59,6 @@ const Profile = () => {
       setProfileData(formData);
       setIsEditing(false);
       setAvatarPreview(null);
-      console.log('Profile saved successfully:', formData);
     } catch (error) {
       console.error('Error saving profile:', error);
       // Add toast notification here

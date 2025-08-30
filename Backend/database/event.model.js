@@ -62,7 +62,6 @@ exports.getEvents = async () => {
                 e.start_datetime,
                 e.end_datetime,
                 ec.category AS event_category,
-                es.status AS event_status,
                 e.created_at,
                 ARRAY_AGG(
                     JSON_BUILD_OBJECT(
@@ -76,17 +75,38 @@ exports.getEvents = async () => {
                 events e
             JOIN 
                 event_categories ec ON e.category = ec.id
-            JOIN 
-                event_status es ON e.status = es.id
             LEFT JOIN 
                 event_images ei ON e.id = ei.event_id
             GROUP BY 
-                e.id, ec.category, es.status
+                e.id, ec.category
             ORDER BY 
                 e.created_at DESC;
         `);
 
         return result.rows;
+    } catch (error) {
+        console.error(`[DATABASE] Error getting events: ${error.message}`);
+        throw error;
+    }
+};
+
+exports.getEventDetails = async (id) => {
+    try {
+        const event = await pool.query(
+            `SELECT e.id, e.title, e.description, e.start_datetime, e.end_datetime, e.location
+       FROM events e WHERE e.id = $1`,
+            [id]
+        );
+
+        const tickets = await pool.query(
+            `SELECT t.id, tt.type, tt.id as ticket_type_id, t.price, t.sale_start, t.sale_end, t.max_quantity, t.per_user_limit
+       FROM tickets t
+       JOIN ticket_type tt ON t.type = tt.id
+       WHERE t.event_id = $1`,
+            [id]
+        );
+
+        return { event: event.rows[0], tickets: tickets.rows };
     } catch (error) {
         console.error(`[DATABASE] Error getting events: ${error.message}`);
         throw error;
@@ -108,7 +128,6 @@ exports.getEventsByProfile = async (userID) => {
                 e.start_datetime,
                 e.end_datetime,
                 ec.category AS event_category,
-                es.status AS event_status,
                 e.created_at,
                 ARRAY_AGG(
                     JSON_BUILD_OBJECT(
@@ -122,14 +141,12 @@ exports.getEventsByProfile = async (userID) => {
                 events e
             JOIN 
                 event_categories ec ON e.category = ec.id
-            JOIN 
-                event_status es ON e.status = es.id
             LEFT JOIN 
                 event_images ei ON e.id = ei.event_id
             WHERE 
                 e.user_id = $1
             GROUP BY 
-                e.id, ec.category, es.status
+                e.id, ec.category
             ORDER BY 
                 e.created_at DESC
         `, [userID]);

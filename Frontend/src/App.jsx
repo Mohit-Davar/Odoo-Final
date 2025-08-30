@@ -12,6 +12,7 @@ import LandingPage from './pages/Landing';
 import Attendes from './pages/Attendes';
 import EventHiveBooking from './pages/JoinEvent';
 import MyEvents from './pages/MyEvents';
+import MyBookings from './pages/MyBookings';
 
 export default function App() {
   return (
@@ -21,10 +22,11 @@ export default function App() {
           <Route path='/home' element={<HomePage />} />
           <Route path='/profile' element={<Profile />} />
           <Route path='/attendes/:id' element={<Attendes />} />
-          <Route path='/myevents' element={<MyEvents/>}/>
-        <Route path='/events/new' element={<CreateEvent />} />
-        <Route path='/register/event/:eventId' element={<EventHiveBooking />} />
-        <Route path="/events/edit/:eventId" element={<CreateEvent />} />
+          <Route path='/myevents' element={<MyEvents />} />
+          <Route path='/my-bookings' element={<MyBookings />} />
+          <Route path='/events/new' element={<CreateEvent />} />
+          <Route path='/register/event/:eventId' element={<EventHiveBooking />} />
+          <Route path="/events/edit/:eventId" element={<CreateEvent />} />
         </Route>
         <Route path='/login' element={<Login />} />
         <Route path='/signup' element={<Signup />} />

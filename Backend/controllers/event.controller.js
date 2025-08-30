@@ -19,6 +19,15 @@ exports.getEvents = async (req, res) => {
     }
 };
 
+exports.getEventDetails = async (req, res) => {
+    try {
+        const events = await eventModel.getEventDetails(req.params.id);
+        res.status(200).json(events);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
 exports.getEventByProfile = async (req, res) => {
     try {
         const events = await eventModel.getEventsByProfile(req.user.id);
@@ -78,7 +87,6 @@ exports.getEventCategories = async (req, res) => {
 // Statuses
 exports.getEventStatuses = async (req, res) => {
     try {
-        console.log("bye")
         const eventStatuses = await eventModel.getEventStatuses();
         res.status(200).json(eventStatuses);
     } catch (error) {

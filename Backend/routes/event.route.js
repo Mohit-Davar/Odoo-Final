@@ -6,6 +6,9 @@ router.route('/')
     .post(event.createEvent)
     .get(event.getEvents);
 
+router.route('/details/:id')
+    .get(event.getEventDetails)
+
 router.route('/profile')
     .get(event.getEventByProfile);
 
@@ -14,11 +17,6 @@ router.route('/categories')
 
 router.route('/statuses')
     .get(event.getEventStatuses);
-
-router.route('/:id')
-    .get(event.getEventById)
-    .put(event.updateEvent)
-    .delete(event.deleteEvent);
 
 // Photos
 router.route('/photos')

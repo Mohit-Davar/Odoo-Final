@@ -50,14 +50,42 @@ CREATE TABLE event_images (
     uploaded_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE ticket_type(
+    id SERIAL PRIMARY KEY,
+    type VARCHAR(100) UNIQUE NOT NULL
+);
+
+CREATE TABLE tickets (
+    id BIGSERIAL PRIMARY KEY,
+    event_id BIGINT NOT NULL REFERENCES events(id) ON DELETE CASCADE,
+    type BIGINT NOT NULL REFERENCES ticket_type(id) ON DELETE RESTRICT,
+    price NUMERIC(10, 2) NOT NULL,
+    sale_start TIMESTAMPTZ NOT NULL,
+    sale_end TIMESTAMPTZ NOT NULL,
+    max_quantity INT NOT NULL,
+    per_user_limit INT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE attendees (
     id BIGSERIAL PRIMARY KEY,
     event_id BIGINT NOT NULL REFERENCES events(id) ON DELETE CASCADE,
-    user_id BIGINT REFERENCES users(id) ON DELETE SET NULL,
+    user_id BIGINT REFERENCES users(id) ON DELETE CASCADE,
     name VARCHAR(100) NOT NULL,
     email VARCHAR(255) NOT NULL,
     phone VARCHAR(50),
     gender VARCHAR(50),
-    ticket_type VARCHAR(50) NOT NULL,
+    ticket_id BIGINT NOT NULL REFERENCES tickets(id) ON DELETE RESTRICT,
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE event_notifications (
+    id BIGSERIAL PRIMARY KEY,
+    event_id BIGINT NOT NULL REFERENCES events(id) ON DELETE CASCADE,
+    user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    message TEXT NOT NULL,
+    notified BOOLEAN DEFAULT FALSE,
+    notify_at TIMESTAMPTZ NOT NULL,
+    -- When to notify
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
