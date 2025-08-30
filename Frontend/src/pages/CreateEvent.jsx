@@ -440,6 +440,7 @@ const parseEventForForm = (eventData) => {
     coordinates: eventData.location
       ? { lat: eventData.location.y, lon: eventData.location.x }
       : null,
+    isPublished: eventData.is_published ?? false, // Added this line
     images: eventData.images || [],
     eventDateTime: {
       dateRange,
@@ -473,6 +474,7 @@ const CreateEditEvent = () => {
       description: "",
       location: "",
       coordinates: null,
+      isPublished: false, // Added this line
       images: [],
       eventDateTime: {
         dateRange: { from: undefined, to: undefined },
@@ -683,6 +685,7 @@ const CreateEditEvent = () => {
         address: data.location.trim(),
         start_date: startDateTime.toISOString(),
         end_date: endDateTime.toISOString(),
+        is_published: data.isPublished, // Added this line
         pseudonym_id: null,
         status_id: 1,
         images: data.images.map((img) => ({
@@ -1027,6 +1030,18 @@ const CreateEditEvent = () => {
             </div>
 
             {/* Additional Options */}
+            <Controller
+              name="isPublished" // Changed name
+              control={control}
+              render={({ field }) => (
+                <ToggleField
+                  label="Publish Event" // Label remains the same for now
+                  value={field.value}
+                  onChange={field.onChange}
+                  description={field.value ? 'Event will be publicly visible.' : 'Event will be saved as a draft.'} // Dynamic description
+                />
+              )}
+            />
 
             {/* Image Upload */}
             <Controller

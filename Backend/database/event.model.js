@@ -77,6 +77,8 @@ exports.getEvents = async () => {
                 event_categories ec ON e.category = ec.id
             LEFT JOIN 
                 event_images ei ON e.id = ei.event_id
+            WHERE 
+                e.is_published = TRUE
             GROUP BY 
                 e.id, ec.category
             ORDER BY 

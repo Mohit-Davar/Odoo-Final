@@ -34,6 +34,7 @@ CREATE TABLE events (
     coordinates GEOGRAPHY(Point, 4326),
     start_datetime TIMESTAMPTZ NOT NULL,
     end_datetime TIMESTAMPTZ NOT NULL,
+    is_published BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
