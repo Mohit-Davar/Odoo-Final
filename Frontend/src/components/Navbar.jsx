@@ -14,7 +14,6 @@ import { Bell, Calendar, LogOut, PlusCircle, Ticket, User } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getUserProfile } from "@/api/users";
-import { Link } from "react-router-dom";
 
 export const Logo = () => {
   const navigate = useNavigate();
