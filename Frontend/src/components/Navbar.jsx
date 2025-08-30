@@ -72,7 +72,9 @@ export default function Header() {
               <p className="font-semibold text-primary">{user.email}</p>
             </DropdownItem>
             <DropdownItem key="profile" startContent={<User className="w-4 h-4" />} textValue="Profile">
+              <Link to="/profile">
               Profile
+              </Link>
             </DropdownItem>
             <DropdownItem key="create_event" startContent={<PlusCircle className="w-4 h-4" />} textValue="Create New Event">
             <Link to="/events/new">Create New Event</Link> 

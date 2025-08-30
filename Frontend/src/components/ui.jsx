@@ -55,7 +55,7 @@ export const SearchBar = ({ value, onChange }) => (
   </div>
 );
 
-import { getIssueCategories, getIssueStatuses } from '@/api/issues';
+import { getIssueCategories, getIssueStatuses } from '@/api/event';
 
 // Filter Bar Component
 export const FilterBar = ({ filters, onFilterChange, searchValue, onSearchChange }) => {
@@ -97,12 +97,12 @@ export const FilterBar = ({ filters, onFilterChange, searchValue, onSearchChange
           icon={Clock}
         />
         <FilterDropdown
-        label="Distance"
-        value={filters.distance}
-        options={['1km', '3km', '5km']}
-        onChange={(value) => onFilterChange('distance', value)}
-        icon={MapPin}
-      />
+          label="Distance"
+          value={filters.distance}
+          options={['1km', '3km', '5km']}
+          onChange={(value) => onFilterChange('distance', value)}
+          icon={MapPin}
+        />
         <SearchBar value={searchValue} onChange={onSearchChange} />
       </div>
     </div>

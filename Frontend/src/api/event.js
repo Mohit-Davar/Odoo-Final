@@ -1,7 +1,7 @@
 import { api } from './BaseAPI';
 
-export const getIssues = async () => {
-    const { data } = await api.get('/issues');
+export const getEvents = async () => {
+    const { data } = await api.get('/events');
     return data;
 };
 

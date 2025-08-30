@@ -1,4 +1,4 @@
-import React,{ useRef, useCallback, useEffect, useMemo } from 'react';
+import React, { useRef, useCallback, useEffect, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import {
@@ -7,7 +7,7 @@ import {
 } from '@/components/report_ui';
 import { ArrowLeft, Calendar as CalendarIcon, MapPin, Navigation, Search, Loader2, X, Clock } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { createIssue, getIssueCategories, getIssueById, updateIssue } from '@/api/issues';
+import { createIssue, getIssueCategories, getIssueById, updateIssue } from '@/api/event';
 import { DayPicker } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
 import { format } from 'date-fns';
@@ -61,7 +61,7 @@ const TimePicker = ({ value, onChange, label, error, required }) => {
       {label && (
         <label className="block mb-1 font-medium text-gray-700">
           {label}
-          {required && <span className="text-red-500 ml-1">*</span>}
+          {required && <span className="ml-1 text-red-500">*</span>}
         </label>
       )}
       <div className="relative">
@@ -71,9 +71,9 @@ const TimePicker = ({ value, onChange, label, error, required }) => {
           onChange={(e) => handleTimeChange(e.target.value)}
           className={`w-full p-2 pr-10 border rounded-md ${error ? 'border-red-500' : 'border-gray-300'}`}
         />
-        <Clock className="w-4 h-4 text-gray-400 absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none" />
+        <Clock className="top-1/2 right-3 absolute w-4 h-4 text-gray-400 -translate-y-1/2 pointer-events-none transform" />
       </div>
-      {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+      {error && <p className="mt-1 text-red-500 text-xs">{error.message}</p>}
     </div>
   );
 };
@@ -91,28 +91,28 @@ const DateTimeRangePicker = ({ value, onChange, error, required }) => {
 
   const handleDateRangeChange = (newRange) => {
     setTempDateRange(newRange);
-    
+
     const updatedValue = {
       ...value,
       dateRange: newRange,
       startTime: newRange?.from ? (value?.startTime || new Date()) : null,
       endTime: newRange?.to ? (value?.endTime || new Date()) : null
     };
-    
+
     if (newRange?.from && !value?.startTime) {
       const defaultStartTime = new Date();
       defaultStartTime.setHours(9, 0, 0, 0);
       updatedValue.startTime = defaultStartTime;
     }
-    
+
     if (newRange?.to && !value?.endTime) {
       const defaultEndTime = new Date();
       defaultEndTime.setHours(17, 0, 0, 0);
       updatedValue.endTime = defaultEndTime;
     }
-    
+
     onChange(updatedValue);
-    
+
     if (newRange?.from && newRange?.to && newRange.from.getTime() !== newRange.to.getTime()) {
       setIsCalendarOpen(false);
     }
@@ -129,9 +129,9 @@ const DateTimeRangePicker = ({ value, onChange, error, required }) => {
     <div className="space-y-4">
       <label className="block font-medium text-gray-700">
         Event Date & Time
-        {required && <span className="text-red-500 ml-1">*</span>}
+        {required && <span className="ml-1 text-red-500">*</span>}
       </label>
-      
+
       <div className="relative">
         <button
           type="button"
@@ -140,16 +140,16 @@ const DateTimeRangePicker = ({ value, onChange, error, required }) => {
         >
           <span className="text-gray-700">
             {value?.dateRange?.from ? (
-              value.dateRange.to ? 
+              value.dateRange.to ?
                 `${format(value.dateRange.from, 'LLL d, y')} - ${format(value.dateRange.to, 'LLL d, y')}` :
                 format(value.dateRange.from, 'LLL d, y')
             ) : 'Select date range'}
           </span>
           <CalendarIcon className="w-4 h-4 text-gray-500" />
         </button>
-        
+
         {isCalendarOpen && (
-          <div className="absolute z-10 mt-2 bg-white border rounded-md shadow-lg">
+          <div className="z-10 absolute bg-white shadow-lg mt-2 border rounded-md">
             <DayPicker
               className="p-4"
               mode="range"
@@ -162,14 +162,14 @@ const DateTimeRangePicker = ({ value, onChange, error, required }) => {
       </div>
 
       {value?.dateRange?.from && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="gap-4 grid grid-cols-1 md:grid-cols-2">
           <TimePicker
             label="Start Time"
             value={value.startTime}
             onChange={(time) => handleTimeChange('startTime', time)}
             required
           />
-          
+
           {value?.dateRange?.to && (
             <TimePicker
               label="End Time"
@@ -182,7 +182,7 @@ const DateTimeRangePicker = ({ value, onChange, error, required }) => {
       )}
 
       {value?.dateRange?.from && value?.startTime && (
-        <div className="bg-blue-50 border border-blue-200 p-3 rounded-md">
+        <div className="bg-blue-50 p-3 border border-blue-200 rounded-md">
           <div className="text-blue-800 text-sm">
             <div className="font-medium">Event Schedule:</div>
             <div>
@@ -197,7 +197,7 @@ const DateTimeRangePicker = ({ value, onChange, error, required }) => {
         </div>
       )}
 
-      {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+      {error && <p className="mt-1 text-red-500 text-xs">{error.message}</p>}
     </div>
   );
 };
@@ -237,20 +237,20 @@ const useGeolocation = () => {
 const useLocationSearch = (currentLocation) => {
   const searchLocations = useCallback(async (query) => {
     if (!query?.trim() || query.length < 3) return [];
-    
+
     try {
-      const proximity = currentLocation 
-        ? `&proximity=${currentLocation.lon},${currentLocation.lat}` 
+      const proximity = currentLocation
+        ? `&proximity=${currentLocation.lon},${currentLocation.lat}`
         : '';
-        
+
       const response = await fetch(
         `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&addressdetails=1&countrycodes=in${proximity}`
       );
-      
+
       if (!response.ok) throw new Error('Search failed');
-      
+
       const data = await response.json();
-      
+
       return data.map(item => ({
         id: item.place_id,
         display_name: item.display_name,
@@ -258,12 +258,12 @@ const useLocationSearch = (currentLocation) => {
         lon: parseFloat(item.lon),
         distance: currentLocation ? Math.round(
           Math.sqrt(
-            Math.pow((parseFloat(item.lat) - currentLocation.lat) * 111, 2) + 
+            Math.pow((parseFloat(item.lat) - currentLocation.lat) * 111, 2) +
             Math.pow((parseFloat(item.lon) - currentLocation.lon) * 111, 2)
           )
         ) : null
       })).sort((a, b) => (a.distance || Infinity) - (b.distance || Infinity));
-      
+
     } catch (error) {
       console.error('Location search error:', error);
       throw error;
@@ -279,9 +279,9 @@ const useReverseGeocode = () => {
       const response = await fetch(
         `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`
       );
-      
+
       if (!response.ok) throw new Error('Reverse geocoding failed');
-      
+
       const data = await response.json();
       return data.display_name || '';
     } catch (error) {
@@ -299,11 +299,11 @@ const FormInput = ({ label, error, required, className = '', children, ...props 
     {label && (
       <label className="block mb-1 font-medium text-gray-700">
         {label}
-        {required && <span className="text-red-500 ml-1">*</span>}
+        {required && <span className="ml-1 text-red-500">*</span>}
       </label>
     )}
     {children}
-    {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+    {error && <p className="mt-1 text-red-500 text-xs">{error.message}</p>}
   </div>
 );
 
@@ -311,10 +311,10 @@ const LocationSuggestions = ({ suggestions, onSelect, isVisible, isLoading }) =>
   if (!isVisible || (!suggestions.length && !isLoading)) return null;
 
   return (
-    <div className="absolute z-[99999] w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
+    <div className="z-[99999] absolute bg-white shadow-lg mt-1 border border-gray-300 rounded-md w-full max-h-60 overflow-auto">
       {isLoading && (
-        <div className="p-3 text-center text-gray-500">
-          <Loader2 className="w-4 h-4 animate-spin inline mr-2" />
+        <div className="p-3 text-gray-500 text-center">
+          <Loader2 className="inline mr-2 w-4 h-4 animate-spin" />
           Searching locations...
         </div>
       )}
@@ -323,19 +323,19 @@ const LocationSuggestions = ({ suggestions, onSelect, isVisible, isLoading }) =>
           key={suggestion.id}
           type="button"
           onClick={() => onSelect(suggestion)}
-          className="w-full text-left p-3 hover:bg-gray-50 border-b border-gray-100 last:border-b-0 transition-colors"
+          className="hover:bg-gray-50 p-3 border-gray-100 border-b last:border-b-0 w-full text-left transition-colors"
         >
           <div className="flex items-start gap-2">
-            <MapPin className="w-4 h-4 text-gray-500 mt-0.5 flex-shrink-0" />
+            <MapPin className="flex-shrink-0 mt-0.5 w-4 h-4 text-gray-500" />
             <div className="flex-1 min-w-0">
-              <div className="text-sm font-medium text-gray-900 truncate">
+              <div className="font-medium text-gray-900 text-sm truncate">
                 {suggestion.display_name.split(',')[0]}
               </div>
-              <div className="text-xs text-gray-500 line-clamp-2">
+              <div className="text-gray-500 text-xs line-clamp-2">
                 {suggestion.display_name}
               </div>
               {suggestion.distance && (
-                <div className="text-xs text-blue-600 mt-1">
+                <div className="mt-1 text-blue-600 text-xs">
                   {suggestion.distance} km away
                 </div>
               )}
@@ -350,17 +350,17 @@ const LocationSuggestions = ({ suggestions, onSelect, isVisible, isLoading }) =>
 // Utility function to parse existing event data for form
 const parseEventForForm = (eventData) => {
   if (!eventData) return {};
-  
+
   // Parse dates
   const startDate = eventData.start_date ? new Date(eventData.start_date) : null;
   const endDate = eventData.end_date ? new Date(eventData.end_date) : null;
-  
+
   // Create date range
   const dateRange = {
     from: startDate,
     to: endDate && endDate.getTime() !== startDate?.getTime() ? endDate : undefined
   };
-  
+
   return {
     category: eventData.category_id?.toString() || '',
     title: eventData.title || '',
@@ -384,11 +384,11 @@ const CreateEditEvent = () => {
   const navigate = useNavigate();
   const { eventId } = useParams(); // Get eventId from URL params
   const isEditMode = Boolean(eventId);
-  
+
   const fileInputRef = useRef(null);
   const mapRef = useRef(null);
   const locationInputRef = useRef(null);
-  
+
   // React Hook Form setup
   const {
     control,
@@ -504,12 +504,12 @@ const CreateEditEvent = () => {
       setCurrentLocation(location);
       setValue('coordinates', location);
       setValue('currentLocation', location);
-      
+
       const address = await reverseGeocode(location.lat, location.lon);
       if (address) {
         setValue('location', address);
       }
-      
+
       showToast('Current location detected!', 'success');
     } catch (error) {
       showToast(error.message, 'error');
@@ -532,9 +532,9 @@ const CreateEditEvent = () => {
       click: async (e) => {
         const { lat, lng } = e.latlng;
         const newCoordinates = { lat, lon: lng };
-        
+
         setValue('coordinates', newCoordinates);
-        
+
         try {
           const address = await reverseGeocode(lat, lng);
           if (address) {
@@ -551,7 +551,7 @@ const CreateEditEvent = () => {
   // Helper function to combine date and time
   const combineDateTime = (date, time) => {
     if (!date || !time) return null;
-    
+
     const combined = new Date(date);
     combined.setHours(time.getHours(), time.getMinutes(), 0, 0);
     return combined;
@@ -565,7 +565,7 @@ const CreateEditEvent = () => {
     }
 
     const { eventDateTime } = data;
-    
+
     if (!eventDateTime.dateRange?.from || !eventDateTime.startTime) {
       showToast('Please select event date and start time', 'error');
       return;
@@ -573,7 +573,7 @@ const CreateEditEvent = () => {
 
     // Combine dates and times
     const startDateTime = combineDateTime(eventDateTime.dateRange.from, eventDateTime.startTime);
-    const endDateTime = eventDateTime.dateRange.to && eventDateTime.endTime 
+    const endDateTime = eventDateTime.dateRange.to && eventDateTime.endTime
       ? combineDateTime(eventDateTime.dateRange.to, eventDateTime.endTime)
       : startDateTime;
 
@@ -633,9 +633,9 @@ const CreateEditEvent = () => {
     return (
       <div className="bg-gradient-to-br from-civic-blue via-blue-100 to-cyan-100 min-h-screen font-montserrat">
         <main className="mx-auto px-4 py-8 max-w-4xl container">
-          <div className="flex items-center justify-center h-64">
+          <div className="flex justify-center items-center h-64">
             <div className="text-center">
-              <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-blue-600" />
+              <Loader2 className="mx-auto mb-4 w-8 h-8 text-blue-600 animate-spin" />
               <p className="text-gray-600">Loading event data...</p>
             </div>
           </div>
@@ -648,8 +648,8 @@ const CreateEditEvent = () => {
     <div className="bg-gradient-to-br from-civic-blue via-blue-100 to-cyan-100 min-h-screen font-montserrat">
       <main className="mx-auto px-4 py-8 max-w-4xl container">
         <FormCard>
-          <button 
-            onClick={() => navigate('/dashboard')} 
+          <button
+            onClick={() => navigate('/dashboard')}
             className="flex items-center gap-2 bg-white/20 hover:bg-white/30 px-4 py-2 rounded-full text-black transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -667,7 +667,7 @@ const CreateEditEvent = () => {
               <Controller
                 name="title"
                 control={control}
-                rules={{ 
+                rules={{
                   required: 'Event name is required',
                   maxLength: { value: 100, message: 'Maximum 100 characters' },
                   validate: value => value.trim().length > 0 || 'Event name cannot be empty'
@@ -707,22 +707,22 @@ const CreateEditEvent = () => {
             <Controller
               name="eventDateTime"
               control={control}
-              rules={{ 
+              rules={{
                 required: 'Event date and time are required',
                 validate: (value) => {
                   if (!value?.dateRange?.from) return 'Please select event start date';
                   if (!value?.startTime) return 'Please select event start time';
                   if (value.dateRange?.to && !value?.endTime) return 'Please select event end time';
-                  
+
                   if (value.dateRange?.to && value.endTime) {
                     const startDateTime = combineDateTime(value.dateRange.from, value.startTime);
                     const endDateTime = combineDateTime(value.dateRange.to, value.endTime);
-                    
+
                     if (endDateTime <= startDateTime) {
                       return 'End date and time must be after start date and time';
                     }
                   }
-                  
+
                   return true;
                 }
               }}
@@ -740,7 +740,7 @@ const CreateEditEvent = () => {
             <Controller
               name="description"
               control={control}
-              rules={{ 
+              rules={{
                 required: 'Description is required',
                 maxLength: { value: 500, message: 'Maximum 500 characters' },
                 validate: value => value.trim().length > 0 || 'Description cannot be empty'
@@ -754,7 +754,7 @@ const CreateEditEvent = () => {
                     className={`w-full p-2 border rounded-md resize-none ${error ? 'border-red-500' : 'border-gray-300'}`}
                     maxLength={500}
                   />
-                  <div className="text-xs text-gray-500 mt-1">
+                  <div className="mt-1 text-gray-500 text-xs">
                     {field.value?.length || 0}/500 characters
                   </div>
                 </FormInput>
@@ -764,13 +764,13 @@ const CreateEditEvent = () => {
             {/* Location Section */}
             <div className="space-y-4">
               <label className="block font-medium text-gray-700">Event Location</label>
-              
+
               <div className="flex items-center gap-3">
                 <button
                   type="button"
                   onClick={handleGetCurrentLocation}
                   disabled={isGettingLocation}
-                  className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                  className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 px-4 py-2 rounded-md font-medium text-white text-sm transition-colors"
                 >
                   {isGettingLocation ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
@@ -779,10 +779,10 @@ const CreateEditEvent = () => {
                   )}
                   {isGettingLocation ? 'Getting Location...' : 'Use Current Location'}
                 </button>
-                
+
                 {currentLocation && (
                   <div className="flex items-center text-green-600 text-sm">
-                    <MapPin className="w-4 h-4 mr-1" />
+                    <MapPin className="mr-1 w-4 h-4" />
                     Current location detected
                   </div>
                 )}
@@ -791,7 +791,7 @@ const CreateEditEvent = () => {
               <Controller
                 name="location"
                 control={control}
-                rules={{ 
+                rules={{
                   required: 'Location is required',
                   validate: value => value.trim().length > 0 || 'Location cannot be empty'
                 }}
@@ -813,15 +813,15 @@ const CreateEditEvent = () => {
                           setTimeout(() => setShowSuggestions(false), 200);
                         }}
                       />
-                      <div className="absolute right-2 top-1/2 transform -translate-y-1/2">
+                      <div className="top-1/2 right-2 absolute -translate-y-1/2 transform">
                         {isSearchingLocations ? (
-                          <Loader2 className="w-4 h-4 animate-spin text-gray-400" />
+                          <Loader2 className="w-4 h-4 text-gray-400 animate-spin" />
                         ) : (
                           <Search className="w-4 h-4 text-gray-400" />
                         )}
                       </div>
                     </div>
-                    
+
                     <LocationSuggestions
                       suggestions={locationSuggestions}
                       onSelect={handleSelectSuggestion}
@@ -834,10 +834,10 @@ const CreateEditEvent = () => {
 
               {/* Map */}
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block font-medium text-gray-700 text-sm">
                   Select precise location (click on map to place pin)
                 </label>
-                <div className="border mt-10 border-gray-300 rounded-lg overflow-hidden">
+                <div className="mt-10 border border-gray-300 rounded-lg overflow-hidden">
                   <MapContainer
                     ref={mapRef}
                     center={coordinates ? [coordinates.lat, coordinates.lon] : [28.6139, 77.2090]}
@@ -845,11 +845,11 @@ const CreateEditEvent = () => {
                     style={{ height: '300px' }}
                     key={coordinates ? `${coordinates.lat}-${coordinates.lon}` : 'default'}
                   >
-                    <TileLayer 
+                    <TileLayer
                       url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                       attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     />
-                    
+
                     {/* Current location marker */}
                     {currentLocation && (
                       <Marker position={[currentLocation.lat, currentLocation.lon]} icon={currentLocationIcon}>
@@ -860,30 +860,30 @@ const CreateEditEvent = () => {
                         </Popup>
                       </Marker>
                     )}
-                    
+
                     {/* Event location marker */}
                     {coordinates && (
                       <Marker position={[coordinates.lat, coordinates.lon]}>
                         <Popup>
                           <div className="text-center">
                             <div className="font-semibold">Event Location</div>
-                            <div className="text-sm text-gray-600">
+                            <div className="text-gray-600 text-sm">
                               {coordinates.lat.toFixed(5)}, {coordinates.lon.toFixed(5)}
                             </div>
                           </div>
                         </Popup>
                       </Marker>
                     )}
-                    
+
                     <MapClickHandler />
                   </MapContainer>
                 </div>
-                
+
                 {coordinates && (
-                  <div className="bg-blue-50 border border-blue-200 p-3 rounded-md">
+                  <div className="bg-blue-50 p-3 border border-blue-200 rounded-md">
                     <div className="flex items-center gap-2 text-blue-800">
                       <MapPin className="w-4 h-4" />
-                      <span className="text-sm font-medium">
+                      <span className="font-medium text-sm">
                         Selected: {coordinates.lat.toFixed(5)}, {coordinates.lon.toFixed(5)}
                       </span>
                     </div>
@@ -897,8 +897,8 @@ const CreateEditEvent = () => {
               name="verified"
               control={control}
               render={({ field }) => (
-                <ToggleField 
-                  label="Publish Event" 
+                <ToggleField
+                  label="Publish Event"
                   value={field.value}
                   onChange={field.onChange}
                   description="Your identity will be attached to this event"
@@ -917,7 +917,7 @@ const CreateEditEvent = () => {
                     const maxSize = 5 * 1024 * 1024;
                     const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
                     const fileList = Array.from(files);
-                    
+
                     if (field.value.length + fileList.length > 5) {
                       showToast('Maximum 5 images allowed', 'error');
                       return;
@@ -943,7 +943,7 @@ const CreateEditEvent = () => {
                           base64: e.target.result,
                           preview: e.target.result,
                         };
-                        
+
                         setValue('images', [...field.value, imageData].slice(0, 5));
                       };
                       reader.readAsDataURL(file);
@@ -958,7 +958,7 @@ const CreateEditEvent = () => {
             />
 
             {/* Submit Button */}
-            <SubmitButton 
+            <SubmitButton
               isSubmitting={isSubmitting}
               isValid={isValid && !!coordinates && !!eventDateTime.dateRange?.from && !!eventDateTime.startTime}
               onClick={handleSubmit(onSubmit)}
@@ -969,12 +969,12 @@ const CreateEditEvent = () => {
       </main>
 
       <Footer />
-      
+
       {toast.show && (
-        <Toast 
-          message={toast.message} 
-          type={toast.type} 
-          onClose={() => setToast({ show: false, message: '', type: '' })} 
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast({ show: false, message: '', type: '' })}
         />
       )}
     </div>

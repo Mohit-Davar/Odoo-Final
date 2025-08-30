@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { getIssueByProfile } from '@/api/issues';
+import { getIssueByProfile } from '@/api/event';
 import {
     FilterBar, IssueGrid, Pagination, Modal, Toast
 } from '@/components/ui';

@@ -12,39 +12,45 @@ const getCategoryColor = (category) => {
     const colors = {
         'Music': 'bg-purple-600',
         'Art': 'bg-blue-600',
-        'Sports': 'bg-green-600'
+        'Sports': 'bg-green-600',
+        'Workshop': 'bg-yellow-600',
+        'Meetup': 'bg-teal-600',
     };
     return colors[category] || 'bg-gray-600';
 };
 
 const EventCard = ({ event, onClick }) => {
+    // Choose the cover image (if exists)
+    const coverImage = event.images.find((img) => img.is_cover) || event.images[0];
+
     const truncatedDescription = event.description.length > 100
         ? `${event.description.slice(0, 100)}...`
         : event.description;
 
     return (
-        <Card 
+        <Card
             className="bg-zinc-900 border border-zinc-800 hover:border-zinc-700 transition-all duration-300 cursor-pointer"
             isPressable
             onPress={() => onClick?.(event)}
         >
             <CardHeader className="p-0">
                 <div className="relative rounded-t-lg w-full h-48 overflow-hidden">
+                    {/* Display cover image */}
                     <img
-                        src={event.image}
+                        src={coverImage.image_url}  // Use cover image or the first one
                         alt={event.title}
                         className="w-full h-full object-cover"
                     />
                     <div className="top-3 left-3 absolute">
                         <Chip
                             size="sm"
-                            className={`${getCategoryColor(event.category)} text-white font-medium`}
+                            className={`${getCategoryColor(event.event_category)} text-white font-medium`}
                         >
-                            {event.category}
+                            {event.event_category}
                         </Chip>
                     </div>
                     <div className="top-3 right-3 absolute bg-primary/60 backdrop-blur-sm px-2 py-1 rounded-lg">
-                        <span className="font-medium text-white text-sm">{event.date}</span>
+                        <span className="font-medium text-white text-sm">{event.start_datetime.slice(0, 10)}</span>
                     </div>
                 </div>
             </CardHeader>

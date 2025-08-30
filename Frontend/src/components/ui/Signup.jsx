@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import {
   Header, FilterBar, IssueGrid, Pagination, Modal, Toast, Footer
 } from '@/components/ui.jsx';
-import { getIssues } from '@/api/issues';
+import { getIssues } from '@/api/event';
 import { flagIssue } from '@/api/flags';
 import { useNavigate } from 'react-router-dom';
 
@@ -22,7 +22,7 @@ const Dashboard = () => {
   const [selectedIssue, setSelectedIssue] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [toast, setToast] = useState({ message: '', type: '', isVisible: false });
-  
+
   useEffect(() => {
     const fetchIssues = async () => {
       try {
@@ -141,16 +141,16 @@ const Dashboard = () => {
         conic-gradient(from 45deg at 50% 50%, rgba(255,255,255,0.1) 0deg, transparent 90deg, rgba(255,255,255,0.1) 180deg, transparent 270deg)
       `
     }}>
-      <div className="container mx-auto px-4 py-8 max-w-7xl">
+      <div className="mx-auto px-4 py-8 max-w-7xl container">
         <Header onLoginClick={handleLogin} />
-        
+
         <FilterBar
           filters={filters}
           onFilterChange={handleFilterChange}
           searchValue={searchValue}
           onSearchChange={handleSearchChange}
         />
-        
+
         {currentIssues.length > 0 ? (
           <>
             <IssueGrid
@@ -158,7 +158,7 @@ const Dashboard = () => {
               onCardClick={handleCardClick}
               onFlag={handleFlag}
             />
-            
+
             {totalPages > 1 && (
               <Pagination
                 currentPage={currentPage}
@@ -168,27 +168,27 @@ const Dashboard = () => {
             )}
           </>
         ) : (
-          <div className="text-center py-12">
-            <div className="backdrop-blur-md bg-white/30 rounded-2xl p-8 shadow-lg border border-white/40">
-              <p className="text-xl font-montserrat font-medium text-black">
+          <div className="py-12 text-center">
+            <div className="bg-white/30 shadow-lg backdrop-blur-md p-8 border border-white/40 rounded-2xl">
+              <p className="font-montserrat font-medium text-black text-xl">
                 No issues found matching your criteria
               </p>
-              <p className="text-black/70 font-montserrat mt-2">
+              <p className="mt-2 font-montserrat text-black/70">
                 Try adjusting your filters or search terms
               </p>
             </div>
           </div>
         )}
-        
+
         <Footer />
       </div>
-      
+
       <Modal
         isOpen={isModalOpen}
         onClose={handleModalClose}
         issue={selectedIssue}
       />
-      
+
       <Toast
         message={toast.message}
         type={toast.type}

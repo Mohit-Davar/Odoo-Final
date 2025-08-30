@@ -136,7 +136,7 @@ const Profile = () => {
             <Button
               color="primary"
               className="bg-red-600 hover:bg-red-700 mt-4"
-              onClick={() => window.location.reload()}
+              onPress={() => window.location.reload()}
             >
               Retry
             </Button>
@@ -190,14 +190,7 @@ const Profile = () => {
             <div className="flex items-center gap-3">
               <Phone size={16} className="text-zinc-500" />
               <span className="text-zinc-300">{profileData.phone_number}</span>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <Calendar size={16} className="text-zinc-500" />
-              <span className="text-zinc-300">
-                {new Date(profileData.date_of_birth).toLocaleDateString()}
-              </span>
-            </div>
+            </div>x
           </div>
         </div>
       </CardBody>
@@ -312,19 +305,6 @@ const Profile = () => {
               label="Phone Number"
               value={formData.phone_number}
               onChange={(e) => handleInputChange('phone_number', e.target.value)}
-              classNames={{
-                base: "max-w-full",
-                mainWrapper: "h-full",
-                input: "text-white",
-                inputWrapper: "bg-zinc-800 border border-zinc-700 hover:border-zinc-600 focus-within:border-red-600"
-              }}
-            />
-
-            <Input
-              label="Date of Birth"
-              type="date"
-              value={formData.date_of_birth}
-              onChange={(e) => handleInputChange('date_of_birth', e.target.value)}
               classNames={{
                 base: "max-w-full",
                 mainWrapper: "h-full",
