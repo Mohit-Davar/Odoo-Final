@@ -39,7 +39,7 @@ export const FilterControls = ({ filters, onFiltersChange }) => {
         <select
           value={filters.gender}
           onChange={(e) => handleFilterChange('gender', e.target.value)}
-          className="filter-dropdown appearance-none min-w-[140px] cursor-pointer"
+          className="filter-dropdown p-2 rounded appearance-none min-w-[140px] cursor-pointer"
         >
           <option value="">Gender</option>
           <option value="Male">Male</option>
@@ -54,7 +54,7 @@ export const FilterControls = ({ filters, onFiltersChange }) => {
         <select
           value={filters.attended}
           onChange={(e) => handleFilterChange('attended', e.target.value)}
-          className="filter-dropdown appearance-none min-w-[140px] cursor-pointer"
+          className="filter-dropdown p-2 rounded appearance-none min-w-[140px] cursor-pointer"
         >
           <option value="">Attended</option>
           <option value="true">Yes</option>
@@ -70,7 +70,7 @@ export const FilterControls = ({ filters, onFiltersChange }) => {
           placeholder="Search attendees"
           value={filters.search}
           onChange={(e) => handleFilterChange('search', e.target.value)}
-          className="search-input w-full"
+          className="search-input rounded p-2 w-full"
         />
         <Search className="absolute right-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-supporting" />
       </div>
