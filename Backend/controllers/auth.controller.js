@@ -4,6 +4,7 @@ const { OTPEmail } = require("../service/emailTemplates");
 const redis = require("../service/redis");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const { createUserProfile } = require('../database/user.model');
 
 const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString();
 const generateAccessToken = (user) => jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "15m" });
@@ -17,6 +18,12 @@ exports.userSignup = async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
         const data = await auth.insertUser({ name, email, password: hashedPassword });
+        const [firstName, lastName] = name.split(" ")
+        await createUserProfile(data.id, {
+            avatar_url: `https://avatar.iran.liara.run/username?username=${firstName}+${lastName}`,
+            bio: "Hi! I am using HiveEvent",
+            phone_number: " "
+        })
 
         const otp = generateOTP();
         await redis.setex(`otp:${email}`, 300, otp);

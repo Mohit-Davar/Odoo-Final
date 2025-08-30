@@ -10,8 +10,8 @@ import {
   Button,
   NavbarItem,
 } from "@heroui/react";
-import { Bell, Calendar, LogOut, PlusCircle, Ticket } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Bell, Calendar, LogOut, PlusCircle, Ticket, User } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getUserProfile } from "@/api/users";
 
@@ -67,9 +67,12 @@ export default function Header() {
           <DropdownMenu aria-label="Profile Actions" variant="bordered" color="primary">
             <DropdownItem key="profile" className="gap-2 h-14" isReadOnly>
               <p className="font-semibold text-primary">Signed in as</p>
-              <p className="font-semibold text-primary">{user.name}</p>
+              <p className="font-semibold text-primary">{user.email}</p>
             </DropdownItem>
-            <DropdownItem key="create_event" startContent={<PlusCircle className="w-4 h-4" />} textValue="Create New Event">
+            <DropdownItem key="profile" startContent={<User className="w-4 h-4" />} textValue="Profile">
+              Profile
+            </DropdownItem>
+            <DropdownItem as={Link} to="/events/new" key="create_event" startContent={<PlusCircle className="w-4 h-4" />} textValue="Create New Event">
               Create New Event
             </DropdownItem>
             <DropdownItem key="my_events" startContent={<Calendar className="w-4 h-4" />} textValue="My Events">

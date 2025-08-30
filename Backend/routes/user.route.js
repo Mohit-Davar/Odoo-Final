@@ -8,23 +8,4 @@ router.route('/profile')
     .put(user.updateUserProfile)
     .get(user.getUserProfile);
 
-// Location
-router.route('/location')
-    .post(user.createUserLocation)
-    .put(user.updateUserLocation)
-    .get(user.getUserLocation);
-
-// Pseudonym
-router.route('/pseudonym')
-    .post(user.createPseudonym)
-    .get(user.getUserPseudonyms);
-
-// Roles
-router.route('/roles')
-    .get(user.getRoles)
-    .post(user.assignRoleToUser);
-
-router.route('/roles/:userId')
-    .get(user.getUserRoles);
-
 module.exports = router
