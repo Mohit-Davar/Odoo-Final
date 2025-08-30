@@ -44,6 +44,11 @@ exports.getBookingsByUserId = async (userId) => {
                 a.id,
                 e.id as event_id,
                 e.title as event_title,
+                e.description,
+                e.location as venue,
+                e.start_datetime as event_date,
+                e.start_datetime as event_time,
+                u.name as organizer,
                 tt.type as ticket_type,
                 t.price,
                 a.created_at
@@ -55,6 +60,8 @@ exports.getBookingsByUserId = async (userId) => {
                 tickets t ON a.ticket_id = t.id
             JOIN
                 ticket_type tt ON t.type = tt.id
+            JOIN
+                users u ON e.user_id = u.id
             WHERE
                 a.user_id = $1
             ORDER BY

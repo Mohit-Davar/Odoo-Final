@@ -12,7 +12,7 @@ const EventHiveBooking = () => {
   const [currentScreen, setCurrentScreen] = useState('tickets');
   const [ticketCounts, setTicketCounts] = useState({});
   const [attendeesData, setAttendeesData] = useState({});
-  const [isLoading, setIsLoading] = useState(false);
+  const [, setIsLoading] = useState(false);
 
   const { data, isLoading: eventLoading, isError } = useQuery({
     queryKey: ['eventDetails', eventId],
