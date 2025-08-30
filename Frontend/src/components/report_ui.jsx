@@ -205,7 +205,7 @@ export const ToggleField = ({
           <EyeOff className="w-6 h-6 text-black" />
         )}
         <span className="font-medium text-black">
-          {value ? 'Public' : 'Private'}
+          {value ? 'Published' : 'Draft'}
         </span>
       </div>
       <button
