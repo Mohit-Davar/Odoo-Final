@@ -1,4 +1,4 @@
-const issueModel = require('../database/issue.model');
+const issueModel = require('../database/event.model');
 
 // Issues
 exports.createIssue = async (req, res) => {
@@ -10,9 +10,9 @@ exports.createIssue = async (req, res) => {
     }
 };
 
-exports.getIssues = async (req, res) => {
+exports.getEvents = async (req, res) => {
     try {
-        const issues = await issueModel.getIssues();
+        const issues = await issueModel.getEvents();
         res.status(200).json(issues);
     } catch (error) {
         res.status(500).json({ message: error.message });
