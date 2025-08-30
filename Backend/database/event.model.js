@@ -24,45 +24,52 @@ exports.createIssue = async (userID, issue) => {
     }
 };
 
-exports.getIssues = async () => {
+exports.getEvents = async () => {
     try {
         const result = await pool.query(`
             SELECT 
-                i.id,
-                i.title,
-                i.description,
-                i.address,
-                i.is_anonymous,
-                i.created_at,
-                i.updated_at,
-                ST_AsGeoJSON(i.location) AS geojson,
-                ic.name AS category,
-                istatus.name AS status,
-                CASE WHEN i.is_anonymous THEN NULL ELSE u.id END AS user_id,
-                CASE WHEN i.is_anonymous THEN NULL ELSE u.name END AS user_name,
-                CASE WHEN i.is_anonymous THEN NULL ELSE up.avatar_url END AS user_avatar,
-                p.pseudonym,
-                ip.media_url AS photo_url
-            FROM issues i
-            JOIN issue_categories ic ON i.category_id = ic.id
-            JOIN issue_statuses istatus ON i.status_id = istatus.id
-            LEFT JOIN users u ON u.id = i.user_id
-            LEFT JOIN user_profiles up ON up.user_id = u.id
-            LEFT JOIN user_pseudonyms p ON p.id = i.pseudonym_id
-            LEFT JOIN LATERAL (
-                SELECT media_url FROM issue_photos ip
-                WHERE ip.issue_id = i.id
-                ORDER BY ip.created_at ASC
-                LIMIT 1
-            ) ip ON true
-            ORDER BY i.created_at DESC;
+                e.id AS event_id,
+                e.user_id,
+                e.title,
+                e.description,
+                e.location,
+                ST_X(e.coordinates::geometry) AS longitude,
+                ST_Y(e.coordinates::geometry) AS latitude,
+                e.start_datetime,
+                e.end_datetime,
+                ec.category AS event_category,
+                es.status AS event_status,
+                e.created_at,
+                ARRAY_AGG(
+                    JSON_BUILD_OBJECT(
+                        'image_id', ei.id,
+                        'image_url', ei.image_url,
+                        'is_cover', ei.is_cover,
+                        'uploaded_at', ei.uploaded_at
+                    )
+                ) AS images
+            FROM 
+                events e
+            JOIN 
+                event_categories ec ON e.category = ec.id
+            JOIN 
+                event_status es ON e.status = es.id
+            LEFT JOIN 
+                event_images ei ON e.id = ei.event_id
+            GROUP BY 
+                e.id, ec.category, es.status
+            ORDER BY 
+                e.created_at DESC;
         `);
+
+        console.log(result.rows[0]);
         return result.rows;
     } catch (error) {
-        console.error(`[DATABASE] Error getting issues: ${error.message}`);
+        console.error(`[DATABASE] Error getting events: ${error.message}`);
         throw error;
     }
 };
+
 
 exports.getIssueByProfile = async (userId) => {
     try {
