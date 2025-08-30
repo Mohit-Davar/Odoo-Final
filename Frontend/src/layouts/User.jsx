@@ -6,8 +6,8 @@ export default function UserLayout() {
     return (
         <>
             <Header />
-                <Outlet />
-            <Footer className="mt-auto" />
+            <Outlet />
+            <Footer/>
         </>
     );
 };

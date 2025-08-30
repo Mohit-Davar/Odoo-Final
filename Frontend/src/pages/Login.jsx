@@ -27,7 +27,7 @@ export default function Login() {
     const onSubmit = async (data) => handleUserLogin(data, setAccessToken, navigate);
 
     return (
-        <main className="relative flex justify-center items-center bg-primary p-4 w-full min-h-screen">
+        <main className="relative flex justify-center items-center bg-background p-4 w-full min-h-screen">
             <motion.div
                 transition={{
                     duration: 0.1,
@@ -39,7 +39,7 @@ export default function Login() {
                 {/* Heading */}
                 <h2 className="font-bold text-primary text-2xl text-center">Sign In</h2>
                 {/* Form */}
-                <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-2">
+                <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-2 text-secondary">
                     {/* Email */}
                     <div className="mb-5">
                         <Input
@@ -75,7 +75,7 @@ export default function Login() {
                 </form>
                 {/* Signup Link */}
                 <div className="flex justify-center">
-                    <span className="text-slate-600 text-sm">Don&apos;t have an account?
+                    <span className="text-secondaryText text-sm">Don&apos;t have an account?
                         <Link to="/signup" className="block sm:inline ml-1 font-bold text-primary decoration-2 hover:underline underline-offset-4">
                             Sign up
                         </Link>
