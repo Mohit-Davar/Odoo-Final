@@ -1,159 +1,111 @@
-import React, { useEffect, useState } from 'react';
-import { PlusCircle, ListChecks } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
-import { getUserProfile } from '@/api/users.js';
 import {
-  AppLogo,
-  NavButton,
-  UserAvatar,
-  UserDropdown,
-  MobileMenu,
-  MobileMenuToggle
-} from './header_ui.jsx';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { toast } from '@heroui/react';
-import { showSuccessToast } from '@/lib/showToast.js';
+  Navbar,
+  NavbarBrand,
+  NavbarContent,
+  DropdownItem,
+  DropdownTrigger,
+  Dropdown,
+  DropdownMenu,
+  Avatar,
+  Button,
+  NavbarItem,
+} from "@heroui/react";
+import { Bell, Calendar, LogOut, PlusCircle, Ticket } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { getUserProfile } from "@/api/users";
 
-const Header = ({ 
-  currentRoute = '/', 
-}) => {
-  const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [user, setUser] = useState("user");
+export const Logo = () => {
   const navigate = useNavigate();
-
-  const onNavigate = (path) => {
-    navigate(path);
-    setIsMobileMenuOpen(false);
-  };
-
-
-  const handleLogoClick = () => {
-    navigate("/dashboard");
-  };
-
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ['userProfile'],
-    queryFn: getUserProfile
-  });
-
-  useEffect(()=>{
-    if(data){
-      setUser(data);
-    }
-  }, [data])
-
-
-  const handleLogoutClick = async() => {
-    await axios.delete(`${import.meta.env.VITE_BASE_URL}/auth/session`, { withCredentials: true });
-    showSuccessToast('Logged out successfully');
-    navigate("/");
-  };
-
-  const handleProfileClick = () => {
-    navigate('/profile');
-    setIsUserDropdownOpen(false);
-  };
-
-  const toggleUserDropdown = () => {
-    setIsUserDropdownOpen(!isUserDropdownOpen);
-  };
-
-  const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
-  };
-
-  const closeMobileMenu = () => {
-    setIsMobileMenuOpen(false);
-  };
-
   return (
-    <>
-      {/* Add Montserrat font */}
-      <link 
-        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" 
-        rel="stylesheet" 
-      />
-      
-      <header className="relative z-10 w-full bg-gradient-to-r from-[#CAF0F8]/80 via-[#CAF0F8]/70 to-[#CAF0F8]/80 backdrop-blur-md border-b border-white/30 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            {/* Left section - Logo */}
-            <div className="flex items-center">
-              <AppLogo onClick={handleLogoClick} />
-            </div>
-
-            {/* Desktop Navigation - Right section */}
-            <div className="hidden md:flex items-center space-x-4">
-              
-                <>
-                  {/* Create New Issue Button */}
-                  <NavButton
-                    icon={PlusCircle}
-                    onClick={() => onNavigate('/report')}
-                    isActive={currentRoute === '/report'}
-                  >
-                    Create New Issue
-                  </NavButton>
-
-                  {/* My Issues Button */}
-                  <NavButton
-                    icon={ListChecks}
-                    onClick={() => onNavigate('/issues')}
-                    isActive={currentRoute === '/issues'}
-                  >
-                    My Issues
-                  </NavButton>
-
-                  {/* User Avatar and Dropdown */}
-                  <div className="relative">
-                    <UserAvatar 
-                      user={user} 
-                      onClick={toggleUserDropdown}
-                    />
-                    <UserDropdown
-                      isOpen={isUserDropdownOpen}
-                      onClose={() => setIsUserDropdownOpen(false)}
-                      onProfile={handleProfileClick}
-                      onLogout={handleLogoutClick}
-                    />
-                  </div>
-                </>
-              
-            </div>
-
-            {/* Mobile Navigation */}
-            <div className="md:hidden flex items-center space-x-2">
-              {user && (
-                <UserAvatar 
-                  user={user} 
-                  onClick={() => onNavigate('/profile')}
-                />
-              )}
-              <MobileMenuToggle
-                isOpen={isMobileMenuOpen}
-                onClick={toggleMobileMenu}
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Mobile Menu */}
-        <MobileMenu
-          isOpen={isMobileMenuOpen}
-          onClose={closeMobileMenu}
-          user={user}
-          currentRoute={currentRoute}
-          onNavigate={onNavigate}
-          onLogout={handleLogoutClick}
-        />
-      </header>
-    </>
+    <div onClick={() => navigate("/")}>
+      <h1 className="mb-2 font-bold text-white text-3xl">
+        Event<span className="text-red-500">Hive</span>
+      </h1>
+      <div className="bg-gradient-to-r from-red-500 to-red-600 mx-auto w-16 h-0.5"></div>
+    </div>
   );
 };
 
-export default Header;
+export default function Header() {
+  const { data: user, isLoading } = useQuery({
+    queryKey: ["currentUser"],
+    queryFn: getUserProfile,
+  });
 
-// Alternative export name for flexibility
-export { Header as AppHeader };
+  const navigate = useNavigate();
+
+  const renderAuthContent = () => {
+    // Show a loading state with a skeleton avatar
+    if (isLoading) {
+      return (
+        <Avatar
+          isBordered
+          as="div"
+          className="transition-transform animate-pulse"
+          color="primary"
+          size="sm"
+        />
+      );
+    }
+
+    // Render the user dropdown if user data exists
+    if (user) {
+      return (
+        <Dropdown placement="bottom-end">
+          <DropdownTrigger>
+            <Avatar
+              isBordered
+              as="button"
+              className="transition-transform"
+              color="primary"
+              name={user.name}
+              size="sm"
+              src={user.avatar_url}
+            />
+          </DropdownTrigger>
+          <DropdownMenu aria-label="Profile Actions" variant="bordered" color="primary">
+            <DropdownItem key="profile" className="gap-2 h-14" isReadOnly>
+              <p className="font-semibold text-primary">Signed in as</p>
+              <p className="font-semibold text-primary">{user.name}</p>
+            </DropdownItem>
+            <DropdownItem key="create_event" startContent={<PlusCircle className="w-4 h-4" />} textValue="Create New Event">
+              Create New Event
+            </DropdownItem>
+            <DropdownItem key="my_events" startContent={<Calendar className="w-4 h-4" />} textValue="My Events">
+              My Events
+            </DropdownItem>
+            <DropdownItem key="my_bookings" startContent={<Ticket className="w-4 h-4" />} textValue="My Bookings">
+              My Bookings
+            </DropdownItem>
+            <DropdownItem key="notifications" startContent={<Bell className="w-4 h-4" />} textValue="Notifications">
+              Notifications
+            </DropdownItem>
+            <DropdownItem key="logout" color="danger" className="text-danger" startContent={<LogOut className="w-4 h-4" />} textValue="Log Out">
+              Log Out
+            </DropdownItem>
+          </DropdownMenu>
+        </Dropdown>
+      );
+    }
+
+    return (
+      <Button color="primary" onPress={() => navigate("/login")}>
+        Login
+      </Button>
+    );
+  };
+
+  return (
+    <Navbar className="bg-background">
+      <NavbarBrand>
+        <Logo />
+      </NavbarBrand>
+      <NavbarContent justify="end">
+        <NavbarItem>
+          {renderAuthContent()}
+        </NavbarItem>
+      </NavbarContent>
+    </Navbar>
+  );
+}

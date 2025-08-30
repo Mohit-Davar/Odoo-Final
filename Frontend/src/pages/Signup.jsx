@@ -19,7 +19,7 @@ export default function SignupPage() {
     }, [clearSignupData]);
 
     return (
-        <main className="flex justify-center items-center bg-primary p-4 w-full min-h-screen">
+        <main className="flex justify-center items-center bg-background p-4 w-full min-h-screen">
             <motion.div
                 transition={{
                     duration: 0.2,

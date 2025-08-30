@@ -1,4 +1,3 @@
-import React from 'react';
 import { 
   User, 
   Edit3, 
@@ -17,11 +16,11 @@ import {
 
 // Header Component
 export const Header = ({ isEditing, onEdit }) => (
-  <header className="bg-white/20 backdrop-blur-md border-b border-white/30">
-    <div className="container mx-auto px-4 py-4 flex justify-between items-center max-w-4xl">
+  <header className="bg-white/20 backdrop-blur-md border-white/30 border-b">
+    <div className="flex justify-between items-center mx-auto px-4 py-4 max-w-4xl container">
       <div className="flex items-center space-x-3">
         <UserCircle className="w-8 h-8 text-black" />
-        <h1 className="text-2xl font-bold text-black" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+        <h1 className="font-bold text-black text-2xl" style={{ fontFamily: 'Montserrat, sans-serif' }}>
           Profile
         </h1>
       </div>
@@ -29,11 +28,11 @@ export const Header = ({ isEditing, onEdit }) => (
       {!isEditing && (
         <button
           onClick={onEdit}
-          className="flex items-center space-x-2 px-4 py-2 bg-white/30 hover:bg-white/40 backdrop-blur-md rounded-xl border border-white/40 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50"
+          className="flex items-center space-x-2 bg-white/30 hover:bg-white/40 focus:ring-opacity-50 backdrop-blur-md px-4 py-2 border border-white/40 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-200"
           aria-label="Edit Profile"
         >
           <Edit3 className="w-4 h-4 text-black" />
-          <span className="text-black font-medium">Edit Profile</span>
+          <span className="font-medium text-black">Edit Profile</span>
         </button>
       )}
     </div>
@@ -67,8 +66,8 @@ export const Avatar = ({ src, alt, size = 'large', preview = null }) => {
 
 // Profile Card Component
 export const ProfileCard = ({ profileData, avatarPreview }) => (
-  <div className="bg-white/30 backdrop-blur-md rounded-3xl p-8 border border-white/40 shadow-xl">
-    <div className="text-center space-y-6">
+  <div className="bg-white/30 shadow-xl backdrop-blur-md p-8 border border-white/40 rounded-3xl">
+    <div className="space-y-6 text-center">
       <Avatar 
         src={profileData.avatar_url} 
         alt={`${profileData.name}'s avatar`}
@@ -76,20 +75,20 @@ export const ProfileCard = ({ profileData, avatarPreview }) => (
       />
       
       <div className="space-y-4">
-        <h2 className="text-3xl font-bold text-black" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+        <h2 className="font-bold text-black text-3xl" style={{ fontFamily: 'Montserrat, sans-serif' }}>
           {profileData.name}
         </h2>
         
         {profileData.bio && (
-          <div className="flex items-start justify-center space-x-3 max-w-2xl mx-auto">
-            <Quote className="w-5 h-5 text-gray-700 mt-1 flex-shrink-0" />
+          <div className="flex justify-center items-start space-x-3 mx-auto max-w-2xl">
+            <Quote className="flex-shrink-0 mt-1 w-5 h-5 text-gray-700" />
             <p className="text-gray-700 text-center leading-relaxed">
               {profileData.bio}
             </p>
           </div>
         )}
         
-        <div className="grid md:grid-cols-2 gap-4 mt-8">
+        <div className="gap-4 grid md:grid-cols-2 mt-8">
           <InfoItem 
             icon={Calendar}
             label="Date of Birth"
@@ -113,23 +112,23 @@ export const ProfileCard = ({ profileData, avatarPreview }) => (
 
 // Info Item Component
 export const InfoItem = ({ icon: Icon, label, value }) => (
-  <div className="flex items-center space-x-3 p-4 bg-white/20 rounded-xl backdrop-blur-sm">
-    <Icon className="w-5 h-5 text-black flex-shrink-0" />
+  <div className="flex items-center space-x-3 bg-white/20 backdrop-blur-sm p-4 rounded-xl">
+    <Icon className="flex-shrink-0 w-5 h-5 text-black" />
     <div className="min-w-0">
-      <p className="text-sm text-gray-600 font-medium">{label}</p>
-      <p className="text-black font-semibold truncate">{value}</p>
+      <p className="font-medium text-gray-600 text-sm">{label}</p>
+      <p className="font-semibold text-black truncate">{value}</p>
     </div>
   </div>
 );
 
 // Address Card Component
 export const AddressCard = ({ profileData }) => (
-  <div className="bg-white/30 backdrop-blur-md rounded-3xl p-8 border border-white/40 shadow-xl">
-    <h3 className="text-2xl font-bold text-black mb-6" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+  <div className="bg-white/30 shadow-xl backdrop-blur-md p-8 border border-white/40 rounded-3xl">
+    <h3 className="mb-6 font-bold text-black text-2xl" style={{ fontFamily: 'Montserrat, sans-serif' }}>
       Address Information
     </h3>
     
-    <div className="grid md:grid-cols-2 gap-4">
+    <div className="gap-4 grid md:grid-cols-2">
       <InfoItem 
         icon={MapPin}
         label="Address"
@@ -168,12 +167,12 @@ export const InputField = ({
   icon: Icon
 }) => (
   <div className="space-y-2">
-    <label className="block text-sm font-semibold text-black">
+    <label className="block font-semibold text-black text-sm">
       {label} {required && <span className="text-red-500">*</span>}
     </label>
     <div className="relative">
       {Icon && (
-        <Icon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
+        <Icon className="top-1/2 left-3 absolute w-5 h-5 text-gray-500 -translate-y-1/2 transform" />
       )}
       {multiline ? (
         <textarea
@@ -198,7 +197,7 @@ export const InputField = ({
 
 // Avatar Upload Component
 export const AvatarUpload = ({ currentSrc, preview, onChange }) => (
-  <div className="text-center space-y-4">
+  <div className="space-y-4 text-center">
     <Avatar 
       src={currentSrc}
       alt="Profile avatar"
@@ -206,13 +205,13 @@ export const AvatarUpload = ({ currentSrc, preview, onChange }) => (
     />
     
     <div className="space-y-2">
-      <label className="block text-sm font-semibold text-black">
+      <label className="block font-semibold text-black text-sm">
         Profile Photo
       </label>
       <div className="flex justify-center">
-        <label className="flex items-center space-x-2 px-4 py-2 bg-white/30 hover:bg-white/40 backdrop-blur-md rounded-xl border border-white/40 cursor-pointer transition-all duration-200 focus-within:ring-2 focus-within:ring-blue-400 focus-within:ring-opacity-50">
+        <label className="flex items-center space-x-2 bg-white/30 hover:bg-white/40 focus-within:ring-opacity-50 backdrop-blur-md px-4 py-2 border border-white/40 rounded-xl focus-within:ring-2 focus-within:ring-blue-400 transition-all duration-200 cursor-pointer">
           <Upload className="w-4 h-4 text-black" />
-          <span className="text-black font-medium">Upload Photo</span>
+          <span className="font-medium text-black">Upload Photo</span>
           <input
             type="file"
             accept="image/*"
@@ -228,23 +227,23 @@ export const AvatarUpload = ({ currentSrc, preview, onChange }) => (
 
 // Action Buttons Component
 export const ActionButtons = ({ onSave, onCancel }) => (
-  <div className="flex space-x-4 justify-center">
+  <div className="flex justify-center space-x-4">
     <button
       onClick={onSave}
-      className="flex items-center space-x-2 px-6 py-3 bg-green-500/30 hover:bg-green-500/40 backdrop-blur-md rounded-xl border border-green-400/50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50"
+      className="flex items-center space-x-2 bg-green-500/30 hover:bg-green-500/40 focus:ring-opacity-50 backdrop-blur-md px-6 py-3 border border-green-400/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-400 transition-all duration-200"
       aria-label="Save changes"
     >
       <Save className="w-5 h-5 text-black" />
-      <span className="text-black font-semibold">Save Changes</span>
+      <span className="font-semibold text-black">Save Changes</span>
     </button>
     
     <button
       onClick={onCancel}
-      className="flex items-center space-x-2 px-6 py-3 bg-red-500/30 hover:bg-red-500/40 backdrop-blur-md rounded-xl border border-red-400/50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50"
+      className="flex items-center space-x-2 bg-red-500/30 hover:bg-red-500/40 focus:ring-opacity-50 backdrop-blur-md px-6 py-3 border border-red-400/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-400 transition-all duration-200"
       aria-label="Cancel editing"
     >
       <X className="w-5 h-5 text-black" />
-      <span className="text-black font-semibold">Cancel</span>
+      <span className="font-semibold text-black">Cancel</span>
     </button>
   </div>
 );
@@ -258,9 +257,9 @@ export const EditForm = ({
   onSave, 
   onCancel 
 }) => (
-  <div className="bg-white/30 backdrop-blur-md rounded-3xl p-8 border border-white/40 shadow-xl space-y-8">
+  <div className="space-y-8 bg-white/30 shadow-xl backdrop-blur-md p-8 border border-white/40 rounded-3xl">
     <div className="text-center">
-      <h2 className="text-3xl font-bold text-black mb-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+      <h2 className="mb-2 font-bold text-black text-3xl" style={{ fontFamily: 'Montserrat, sans-serif' }}>
         Edit Profile
       </h2>
       <p className="text-gray-700">Update your profile information</p>
@@ -272,7 +271,7 @@ export const EditForm = ({
       onChange={onAvatarChange}
     />
     
-    <div className="grid md:grid-cols-2 gap-6">
+    <div className="gap-6 grid md:grid-cols-2">
       <InputField
         label="Full Name"
         value={formData.name}
@@ -342,8 +341,8 @@ export const EditForm = ({
 
 // Footer Component
 export const Footer = () => (
-  <footer className="bg-white/20 backdrop-blur-md border-t border-white/30 py-6 mt-16">
-    <div className="container mx-auto px-4 text-center max-w-4xl">
+  <footer className="bg-white/20 backdrop-blur-md mt-16 py-6 border-white/30 border-t">
+    <div className="mx-auto px-4 max-w-4xl text-center container">
       <p className="text-black/70 text-sm" style={{ fontFamily: 'Montserrat, sans-serif' }}>
         © 2025 Modern Dashboard. Built with care for exceptional user experiences.
       </p>

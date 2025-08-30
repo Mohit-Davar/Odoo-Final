@@ -16,8 +16,11 @@ export default {
         'montserrat': ['Montserrat', 'sans-serif']
       },
       colors: {
-        "primary": "black",
-         'civic-blue': '#CAF0F8',
+        primary: "#b71e09",
+        secondary: "#f5f5f5",
+        background: "#000203",
+        secondaryText: "#666666",
+        'civic-blue': '#CAF0F8',
       }
     },
   },

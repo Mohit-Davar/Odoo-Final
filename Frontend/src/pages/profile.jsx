@@ -1,13 +1,29 @@
-import React, { useState , useEffect } from 'react';
-import { getUserProfile , updateUserProfile} from '@/api/users.js';
+import React, { useState, useEffect } from 'react';
+import { getUserProfile, updateUserProfile } from '@/api/users.js';
 import { useQuery } from '@tanstack/react-query';
-import { 
-  ProfileCard, 
-  AddressCard, 
-  EditForm, 
-  Footer 
-} from '@/components/profile_ui';
-import { Edit3 } from 'lucide-react';
+import {
+  Card,
+  CardBody,
+  CardHeader,
+  Button,
+  Input,
+  Textarea,
+  Avatar,
+  Divider,
+  Spinner,
+  Breadcrumbs,
+  BreadcrumbItem
+} from '@heroui/react';
+import {
+  Edit3,
+  Save,
+  X,
+  User,
+  MapPin,
+  Phone,
+  Calendar,
+  Upload,
+} from 'lucide-react';
 
 const Profile = () => {
   const [isEditing, setIsEditing] = useState(false);
@@ -17,20 +33,29 @@ const Profile = () => {
     bio: 'Creative designer passionate about creating beautiful, user-centered experiences. Always learning and growing.',
     date_of_birth: '1992-06-15',
     phone_number: '+1 (555) 123-4567',
+    email: 'sarah.johnson@example.com',
     address: '123 Creative Street, Suite 456',
     city: 'San Francisco',
     postal_code: '94102',
     country: 'United States'
   });
 
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isError, error } = useQuery({
     queryKey: ['userProfile'],
     queryFn: getUserProfile
   });
 
-  console.log(data);
   const [formData, setFormData] = useState(profileData);
   const [avatarPreview, setAvatarPreview] = useState(null);
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Update profile data when API data is loaded
+  useEffect(() => {
+    if (data) {
+      setProfileData(data);
+      setFormData(data);
+    }
+  }, [data]);
 
   const handleEdit = () => {
     setIsEditing(true);
@@ -44,17 +69,21 @@ const Profile = () => {
     setAvatarPreview(null);
   };
 
-const handleSave = async () => {
+  const handleSave = async () => {
+    setIsSaving(true);
     try {
-        await updateUserProfile(formData);
-        setProfileData(formData);
-        setIsEditing(false);
-        setAvatarPreview(null);
-        console.log('Profile saved:', formData);
+      await updateUserProfile(formData);
+      setProfileData(formData);
+      setIsEditing(false);
+      setAvatarPreview(null);
+      console.log('Profile saved successfully:', formData);
     } catch (error) {
-        console.error('Error saving profile:', error);
+      console.error('Error saving profile:', error);
+      // Add toast notification here
+    } finally {
+      setIsSaving(false);
     }
-};
+  };
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({
@@ -66,6 +95,12 @@ const handleSave = async () => {
   const handleAvatarChange = (event) => {
     const file = event.target.files[0];
     if (file) {
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        console.error('File size too large');
+        return;
+      }
+
       const reader = new FileReader();
       reader.onloadend = () => {
         setAvatarPreview(reader.result);
@@ -78,59 +113,257 @@ const handleSave = async () => {
     }
   };
 
-  useEffect(() => {
-  if (data) {
-    setProfileData(data);
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center bg-black min-h-screen">
+        <div className="text-center">
+          <Spinner size="lg" color="primary" />
+          <p className="mt-4 text-white">Loading profile...</p>
+        </div>
+      </div>
+    );
   }
-}, [data]);
+
+  // Error state
+  if (isError) {
+    return (
+      <div className="flex justify-center items-center bg-black min-h-screen">
+        <Card className="bg-zinc-900 border border-zinc-800 max-w-md">
+          <CardBody className="p-8 text-center">
+            <p className="mb-4 text-red-400">Error loading profile</p>
+            <p className="text-zinc-400 text-sm">{error?.message}</p>
+            <Button
+              color="primary"
+              className="bg-red-600 hover:bg-red-700 mt-4"
+              onClick={() => window.location.reload()}
+            >
+              Retry
+            </Button>
+          </CardBody>
+        </Card>
+      </div>
+    );
+  }
+
+  const ProfileViewCard = () => (
+    <Card className="bg-zinc-900 border border-zinc-800">
+      <CardHeader className="pb-0">
+        <div className="flex justify-between items-start w-full">
+          <div className="flex items-center gap-4">
+            <Avatar
+              src={profileData?.avatar_url}
+              name={profileData?.name}
+              size="lg"
+              className="w-16 h-16"
+            />
+            <div>
+              <h1 className="font-bold text-white text-2xl">{profileData?.name}</h1>
+              <p className="text-zinc-400">{profileData?.email}</p>
+            </div>
+          </div>
+          <Button
+            color="primary"
+            variant="flat"
+            size="sm"
+            startContent={<Edit3 size={16} />}
+            onClick={handleEdit}
+            className="bg-red-600/20 hover:bg-red-600/30 border border-red-600/30 text-red-400"
+          >
+            Edit Profile
+          </Button>
+        </div>
+      </CardHeader>
+
+      <CardBody className="pt-6">
+        <div className="space-y-4">
+          <div>
+            <h3 className="flex items-center gap-2 mb-2 font-semibold text-white">
+              <User size={16} /> About
+            </h3>
+            <p className="text-zinc-300 leading-relaxed">{profileData.bio}</p>
+          </div>
+
+          <Divider className="bg-zinc-800" />
+
+          <div className="gap-4 grid grid-cols-1 md:grid-cols-2">
+            <div className="flex items-center gap-3">
+              <Phone size={16} className="text-zinc-500" />
+              <span className="text-zinc-300">{profileData.phone_number}</span>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <Calendar size={16} className="text-zinc-500" />
+              <span className="text-zinc-300">
+                {new Date(profileData.date_of_birth).toLocaleDateString()}
+              </span>
+            </div>
+          </div>
+        </div>
+      </CardBody>
+    </Card>
+  );
+
+  const ProfileEditForm = () => (
+    <Card className="bg-zinc-900 border border-zinc-800">
+      <CardHeader>
+        <div className="flex justify-between items-center w-full">
+          <h2 className="font-bold text-white text-xl">Edit Profile</h2>
+          <div className="flex gap-2">
+            <Button
+              color="default"
+              variant="flat"
+              size="sm"
+              startContent={<X size={16} />}
+              onClick={handleCancel}
+              className="bg-zinc-800 hover:bg-zinc-700 text-zinc-300"
+            >
+              Cancel
+            </Button>
+            <Button
+              color="primary"
+              size="sm"
+              startContent={<Save size={16} />}
+              onClick={handleSave}
+              isLoading={isSaving}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              {isSaving ? 'Saving...' : 'Save Changes'}
+            </Button>
+          </div>
+        </div>
+      </CardHeader>
+
+      <CardBody className="space-y-6">
+        {/* Avatar Upload Section */}
+        <div className="flex flex-col items-center gap-4">
+          <Avatar
+            src={avatarPreview || formData.avatar_url}
+            name={formData.name}
+            size="lg"
+            className="w-20 h-20"
+          />
+          <div className="text-center">
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleAvatarChange}
+              className="hidden"
+              id="avatar-upload"
+            />
+            <label
+              htmlFor="avatar-upload"
+              className="inline-flex items-center gap-2 bg-zinc-800 hover:bg-zinc-700 px-4 py-2 rounded-lg text-white transition-colors cursor-pointer"
+            >
+              <Upload size={16} />
+              Change Avatar
+            </label>
+            <p className="mt-1 text-zinc-500 text-xs">Max 5MB, JPG/PNG only</p>
+          </div>
+        </div>
+
+        <Divider className="bg-zinc-800" />
+
+        {/* Personal Information */}
+        <div className="space-y-4">
+          <h3 className="font-semibold text-white">Personal Information</h3>
+
+          <div className="gap-4 grid grid-cols-1 md:grid-cols-2">
+            <Input
+              label="Full Name"
+              value={formData.name}
+              onChange={(e) => handleInputChange('name', e.target.value)}
+              classNames={{
+                base: "max-w-full",
+                mainWrapper: "h-full",
+                input: "text-white",
+                inputWrapper: "bg-zinc-800 border border-zinc-700 hover:border-zinc-600 focus-within:border-red-600"
+              }}
+            />
+
+            <Input
+              label="Email"
+              type="email"
+              value={formData.email}
+              onChange={(e) => handleInputChange('email', e.target.value)}
+              classNames={{
+                base: "max-w-full",
+                mainWrapper: "h-full",
+                input: "text-white",
+                inputWrapper: "bg-zinc-800 border border-zinc-700 hover:border-zinc-600 focus-within:border-red-600"
+              }}
+            />
+          </div>
+
+          <Textarea
+            label="Bio"
+            value={formData.bio}
+            onChange={(e) => handleInputChange('bio', e.target.value)}
+            minRows={3}
+            classNames={{
+              base: "max-w-full",
+              input: "text-white",
+              inputWrapper: "bg-zinc-800 border border-zinc-700 hover:border-zinc-600 focus-within:border-red-600"
+            }}
+          />
+
+          <div className="gap-4 grid grid-cols-1 md:grid-cols-2">
+            <Input
+              label="Phone Number"
+              value={formData.phone_number}
+              onChange={(e) => handleInputChange('phone_number', e.target.value)}
+              classNames={{
+                base: "max-w-full",
+                mainWrapper: "h-full",
+                input: "text-white",
+                inputWrapper: "bg-zinc-800 border border-zinc-700 hover:border-zinc-600 focus-within:border-red-600"
+              }}
+            />
+
+            <Input
+              label="Date of Birth"
+              type="date"
+              value={formData.date_of_birth}
+              onChange={(e) => handleInputChange('date_of_birth', e.target.value)}
+              classNames={{
+                base: "max-w-full",
+                mainWrapper: "h-full",
+                input: "text-white",
+                inputWrapper: "bg-zinc-800 border border-zinc-700 hover:border-zinc-600 focus-within:border-red-600"
+              }}
+            />
+          </div>
+        </div>
+
+      </CardBody>
+    </Card>
+  );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-sky-50 to-cyan-50" 
-         style={{ 
-           background: 'linear-gradient(135deg, #CAF0F8 0%, #A2D2FF 50%, #BDE0FF 100%)',
-           fontFamily: 'Montserrat, sans-serif'
-         }}>
-      
-      <main className="container mx-auto px-4 py-8 max-w-4xl">
-        <div className="space-y-8">
+    <div className="bg-black min-h-screen">
+      {/* Breadcrumbs */}
+      {/* <div className="bg-zinc-900 px-6 py-3 border-zinc-800 border-b">
+        <div className="mx-auto max-w-4xl">
+          <Breadcrumbs
+            size="sm"
+            classNames={{
+              list: "bg-transparent",
+              item: "text-zinc-400 data-[current=true]:text-white",
+              separator: "text-zinc-600"
+            }}
+          >
+            <BreadcrumbItem>Account</BreadcrumbItem>
+            <BreadcrumbItem>Profile</BreadcrumbItem>
+          </Breadcrumbs>
+        </div>
+      </div> */}
 
-                          {!isEditing && (
-        <button
-          onClick={handleEdit}
-          className="flex items-center space-x-2 px-4 py-2 bg-white/30 hover:bg-white/40 backdrop-blur-md rounded-xl border border-white/40 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50"
-          aria-label="Edit Profile"
-        >
-          <Edit3 className="w-4 h-4 text-black" />
-          <span className="text-black font-medium">Edit Profile</span>
-        </button>
-      )}
-          
-          {!isEditing ? (
-            <>
-              <ProfileCard 
-                profileData={profileData}
-                avatarPreview={avatarPreview}
-              />
-              
-              <AddressCard 
-                profileData={profileData}
-              />
-            </>
-          ) : (
-            <EditForm
-              formData={formData}
-              avatarPreview={avatarPreview}
-              onInputChange={handleInputChange}
-              onAvatarChange={handleAvatarChange}
-              onSave={handleSave}
-              onCancel={handleCancel}
-            />
-          )}
-          
+      {/* Main Content */}
+      <main className="mx-auto px-6 py-8 max-w-4xl">
+        <div className="space-y-6">
+          {isEditing ? <ProfileEditForm /> : <ProfileViewCard />}
         </div>
       </main>
-      
-      <Footer />
     </div>
   );
 };
