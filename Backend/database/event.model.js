@@ -48,7 +48,6 @@ exports.createEvent = async (userID, eventData) => {
 };
 
 exports.getEvents = async () => {
-exports.getEvents = async () => {
     try {
         const result = await pool.query(`
             SELECT 
