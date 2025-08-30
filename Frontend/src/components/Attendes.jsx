@@ -83,7 +83,6 @@ export const StatsCards = ({ attendees }) => {
   const totalAttendees = attendees.length;
   const totalAttended = attendees.filter(a => a.attended).length;
   const totalNotAttended = totalAttendees - totalAttended;
-  const totalGuests = attendees.reduce((sum, a) => sum + a.totalGuests, 0);
 
   const stats = [
     {
@@ -104,12 +103,6 @@ export const StatsCards = ({ attendees }) => {
       icon: XCircle,
       color: 'text-red-500'
     },
-    {
-      title: 'Total Guests',
-      value: totalGuests,
-      icon: Calendar,
-      color: 'text-blue-500'
-    }
   ];
 
   return (
@@ -134,12 +127,26 @@ export const StatsCards = ({ attendees }) => {
 
 // Attendee Table Component
 export const AttendeeTable = ({ attendees }) => {
+    const TICKET_TYPE_MAP = {
+  1: "General Admission",
+  2: "VIP",
+  3: "Student",
+  4: "Business",
+  5: "Lounge",
+  6: "Backstage",
+  7: "Group Pass",
+  8: "Online",
+};
+
+function getTicketType(ticketId) {
+  return TICKET_TYPE_MAP[ticketId] || "Unknown";
+}
   return (
     <div className="bg-secondary border border-supporting rounded-xl overflow-hidden">
       {/* Table Header */}
       <div className="px-6 py-4 grid grid-cols-12 gap-4 bg-secondary-light">
         <div className="col-span-3 table-header">Name</div>
-        <div className="col-span-2 table-header">Total Guest</div>
+        <div className="col-span-2 table-header">Ticket Type</div>
         <div className="col-span-3 table-header">Email</div>
         <div className="col-span-2 table-header">Phone</div>
         <div className="col-span-2 table-header">Gender</div>
@@ -176,14 +183,8 @@ export const AttendeeTable = ({ attendees }) => {
 
             {/* Total Guests */}
             <div className="col-span-2">
-              <div className="flex items-center space-x-2">
-                <Users className="w-4 h-4 text-supporting" />
-                <span className="text-accent font-medium text-lg">
-                  {attendee.totalGuests}
-                </span>
-              </div>
               <div className="text-xs text-supporting mt-1">
-                {attendee.ticketType}
+                {getTicketType(attendee.ticket_id)}
               </div>
             </div>
 
