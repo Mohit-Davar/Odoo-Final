@@ -2,15 +2,15 @@ const express = require('express');
 const router = express.Router();
 const flag = require('../controllers/flag.controller');
 
-// Issue Flags
+// Event Flags
 router.route('/')
-    .post(flag.flagIssue);
+    .post(flag.flagEvent);
 
-router.route('/issue/:issueId')
-    .get(flag.getIssueFlags);
+router.route('/event/:eventId')
+    .get(flag.getEventFlags);
 
-router.route('/issue/:id')
-    .put(flag.updateIssueFlag);
+router.route('/event/:id')
+    .put(flag.updateEventFlag);
 
 // Flag Statuses
 router.route('/statuses')

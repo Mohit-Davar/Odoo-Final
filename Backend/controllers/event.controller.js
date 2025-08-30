@@ -1,10 +1,10 @@
-const issueModel = require('../database/event.model');
+const eventModel = require('../database/event.model');
 
-// Issues
-exports.createIssue = async (req, res) => {
+// Events
+exports.createEvent = async (req, res) => {
     try {
-        const issue = await issueModel.createIssue(req.user.id,req.body);
-        res.status(201).json(issue);
+        const event = await eventModel.createEvent(req.user.id,req.body);
+        res.status(201).json(event);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -12,124 +12,124 @@ exports.createIssue = async (req, res) => {
 
 exports.getEvents = async (req, res) => {
     try {
-        const issues = await issueModel.getEvents();
-        res.status(200).json(issues);
+        const events = await eventModel.getEvents();
+        res.status(200).json(events);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
 
-exports.getIssueByProfile = async (req, res) => {
+exports.getEventByProfile = async (req, res) => {
     try {
-        const issues = await issueModel.getIssueByProfile(req.user.id);
-        res.status(200).json(issues);
+        const events = await eventModel.getEventByProfile(req.user.id);
+        res.status(200).json(events);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
 
-exports.getIssueById = async (req, res) => {
+exports.getEventById = async (req, res) => {
     try {
-        const issue = await issueModel.getIssueById(req.params.id);
-        if (!issue) {
-            return res.status(404).json({ message: 'Issue not found' });
+        const event = await eventModel.getEventById(req.params.id);
+        if (!event) {
+            return res.status(404).json({ message: 'Event not found' });
         }
-        res.status(200).json(issue);
+        res.status(200).json(event);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
 
-exports.updateIssue = async (req, res) => {
+exports.updateEvent = async (req, res) => {
     try {
-        const issue = await issueModel.updateIssue(req.params.id, req.body);
-        if (!issue) {
-            return res.status(404).json({ message: 'Issue not found' });
+        const event = await eventModel.updateEvent(req.params.id, req.body);
+        if (!event) {
+            return res.status(404).json({ message: 'Event not found' });
         }
-        res.status(200).json(issue);
+        res.status(200).json(event);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
 
-exports.deleteIssue = async (req, res) => {
+exports.deleteEvent = async (req, res) => {
     try {
-        const issue = await issueModel.deleteIssue(req.params.id);
-        if (!issue) {
-            return res.status(404).json({ message: 'Issue not found' });
+        const event = await eventModel.deleteEvent(req.params.id);
+        if (!event) {
+            return res.status(404).json({ message: 'Event not found' });
         }
-        res.status(200).json({ message: 'Issue deleted successfully' });
+        res.status(200).json({ message: 'Event deleted successfully' });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
 
 // Categories
-exports.getIssueCategories = async (req, res) => {
+exports.getEventCategories = async (req, res) => {
     try {
-        const issueCategories = await issueModel.getIssueCategories();
-        res.status(200).json(issueCategories);
+        const eventCategories = await eventModel.getEventCategories();
+        res.status(200).json(eventCategories);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
 
 // Statuses
-exports.getIssueStatuses = async (req, res) => {
+exports.getEventStatuses = async (req, res) => {
     try {
         console.log("bye")
-        const issueStatuses = await issueModel.getIssueStatuses();
-        res.status(200).json(issueStatuses);
+        const eventStatuses = await eventModel.getEventStatuses();
+        res.status(200).json(eventStatuses);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
 
 // Photos
-exports.addIssuePhoto = async (req, res) => {
+exports.addEventPhoto = async (req, res) => {
     try {
-        const issuePhoto = await issueModel.addIssuePhoto(req.body);
-        res.status(201).json(issuePhoto);
+        const eventPhoto = await eventModel.addEventPhoto(req.body);
+        res.status(201).json(eventPhoto);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
 
-exports.getIssuePhotos = async (req, res) => {
+exports.getEventPhotos = async (req, res) => {
     try {
-        const issuePhotos = await issueModel.getIssuePhotos(req.params.issueId);
-        res.status(200).json(issuePhotos);
+        const eventPhotos = await eventModel.getEventPhotos(req.params.eventId);
+        res.status(200).json(eventPhotos);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
 
-exports.deleteIssuePhoto = async (req, res) => {
+exports.deleteEventPhoto = async (req, res) => {
     try {
-        const issuePhoto = await issueModel.deleteIssuePhoto(req.params.id);
-        if (!issuePhoto) {
-            return res.status(404).json({ message: 'Issue photo not found' });
+        const eventPhoto = await eventModel.deleteEventPhoto(req.params.id);
+        if (!eventPhoto) {
+            return res.status(404).json({ message: 'Event photo not found' });
         }
-        res.status(200).json({ message: 'Issue photo deleted successfully' });
+        res.status(200).json({ message: 'Event photo deleted successfully' });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
 
 // Logs
-exports.addIssueLog = async (req, res) => {
+exports.addEventLog = async (req, res) => {
     try {
-        const issueLog = await issueModel.addIssueLog(req.body);
-        res.status(201).json(issueLog);
+        const eventLog = await eventModel.addEventLog(req.body);
+        res.status(201).json(eventLog);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
 
-exports.getIssueLogs = async (req, res) => {
+exports.getEventLogs = async (req, res) => {
     try {
-        const issueLogs = await issueModel.getIssueLogs(req.params.issueId);
-        res.status(200).json(issueLogs);
+        const eventLogs = await eventModel.getEventLogs(req.params.eventId);
+        res.status(200).json(eventLogs);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
