@@ -41,12 +41,10 @@ const authenticateToken = require("./middleware/authenticateToken.js");
 const auth = require("./routes/auth.route.js");
 const user = require("./routes/user.route.js");
 const event = require("./routes/event.route.js");
-const flag = require("./routes/flag.route.js");
 
 app.use("/auth", auth);
 app.use("/user", authenticateToken, user);
 app.use("/events", authenticateToken, event);
-app.use("/flags", authenticateToken, flag);
 
 //Connecting the Database
 const redis = require("./service/redis.js");

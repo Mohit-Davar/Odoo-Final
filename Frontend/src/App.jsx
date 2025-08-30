@@ -10,6 +10,7 @@ import Profile from './pages/Profile';
 import CreateEvent from './pages/CreateEvent';
 import LandingPage from './pages/Landing';
 import Attendes from './pages/Attendes';
+import EventHiveBooking from './pages/JoinEvent';
 import MyEvents from './pages/MyEvents';
 
 export default function App() {
@@ -22,6 +23,7 @@ export default function App() {
           <Route path='/attendes/:id' element={<Attendes />} />
           <Route path='/myevents' element={<MyEvents/>}/>
         <Route path='/events/new' element={<CreateEvent />} />
+        <Route path='/register/event/:eventId' element={<EventHiveBooking />} />
         <Route path="/events/edit/:eventId" element={<CreateEvent />} />
         </Route>
         <Route path='/login' element={<Login />} />

@@ -30,4 +30,7 @@ router.route('/photos/:eventId')
 router.route('/photos/:id')
     .delete(event.deleteEventPhoto);
 
+const attendeeRouter = require('./attendee.route.js');
+router.use('/', attendeeRouter);
+
 module.exports = router;
