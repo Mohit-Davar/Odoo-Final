@@ -4,7 +4,6 @@ import { getIssueByProfile } from '@/api/event';
 import {
     FilterBar, IssueGrid, Pagination, Modal, Toast
 } from '@/components/ui';
-import { flagIssue } from '@/api/flags';
 
 const MyIssues = () => {
     const [filters, setFilters] = useState({ category: '', status: '', distance: '' });

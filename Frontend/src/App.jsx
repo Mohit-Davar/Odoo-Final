@@ -23,7 +23,7 @@ export default function App() {
           <Route path='/attendes' element={<Attendes />} />
         <Route path='/events/new' element={<CreateIssue />} />
         <Route path="/events/edit/:eventId" element={<CreateIssue />} />
-        <Route path="/register/event" element={<EventHiveBooking />} />
+        <Route path='/register/event/:eventId' element={<EventHiveBooking />} />
         <Route path='/issues' element={<MyIssues />} />
         </Route>
         <Route path='/login' element={<Login />} />

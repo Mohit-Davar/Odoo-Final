@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Minus, Plus, User, Mail, Phone, Users } from 'lucide-react';
+import { registerForEvent } from '../api/attendees.js';
+import { useParams } from 'react-router-dom';
+
 
 const EventHiveBooking = () => {
   const [currentScreen, setCurrentScreen] = useState('tickets');
@@ -9,6 +12,7 @@ const EventHiveBooking = () => {
   });
   const [attendeesData, setAttendeesData] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const { eventId } = useParams();
 
   const maxTicketsPerUser = 5;
   const ticketPrices = {
@@ -57,18 +61,51 @@ const EventHiveBooking = () => {
     return true;
   };
 
-  const makePayment = () => {
+  const makePayment = async () => {
     if (!validateForm()) {
       alert('Please fill in all required fields');
       return;
     }
 
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
+
+    try {
+      const totalTickets = getTotalTickets();
+      const attendees = [];
+      let ticketNumber = 1;
+
+      for (let i = 0; i < ticketCounts.standard; i++) {
+        attendees.push({
+          name: attendeesData[`${ticketNumber}_name`],
+          email: attendeesData[`${ticketNumber}_email`],
+          phone: attendeesData[`${ticketNumber}_phone`],
+          gender: attendeesData[`${ticketNumber}_gender`] || null,
+          ticketType: 'standard',
+        });
+        ticketNumber++;
+      }
+
+      for (let i = 0; i < ticketCounts.vip; i++) {
+        attendees.push({
+          name: attendeesData[`${ticketNumber}_name`],
+          email: attendeesData[`${ticketNumber}_email`],
+          phone: attendeesData[`${ticketNumber}_phone`],
+          gender: attendeesData[`${ticketNumber}_gender`] || null,
+          ticketType: 'vip',
+        });
+        ticketNumber++;
+      }
+
+      await registerForEvent(eventId, attendees);
+
       alert('Payment successful! Tickets will be sent to your email and WhatsApp.');
       closeBooking();
-    }, 3000);
+    } catch (error) {
+      console.error('Error registering attendees:', error);
+      alert('There was an error processing your booking. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const closeBooking = () => {

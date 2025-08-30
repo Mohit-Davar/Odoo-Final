@@ -33,7 +33,7 @@ CREATE TABLE events (
     user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     title VARCHAR(200) NOT NULL,
     description TEXT,
-    category INT NOT NULL REFERENCES event_categories(category_id) ON DELETE RESTRICT,
+    category INT NOT NULL REFERENCES event_categories(id) ON DELETE RESTRICT,
     location TEXT,
     coordinates GEOGRAPHY(Point, 4326),
     start_datetime TIMESTAMPTZ NOT NULL,
@@ -48,4 +48,16 @@ CREATE TABLE event_images (
     image_url TEXT NOT NULL,
     is_cover BOOLEAN DEFAULT FALSE,
     uploaded_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE attendees (
+    id BIGSERIAL PRIMARY KEY,
+    event_id BIGINT NOT NULL REFERENCES events(id) ON DELETE CASCADE,
+    user_id BIGINT REFERENCES users(id) ON DELETE SET NULL,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    phone VARCHAR(50),
+    gender VARCHAR(50),
+    ticket_type VARCHAR(50) NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
