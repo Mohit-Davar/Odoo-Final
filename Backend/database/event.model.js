@@ -188,7 +188,7 @@ exports.updateEvent = async (id, eventData) => {
 
         const result = await client.query(
             `UPDATE events SET 
-                category_id = $1, 
+                category = $1, 
                 title = $2, 
                 description = $3, 
                 coordinates = ST_SetSRID(ST_MakePoint($4, $5), 4326), 
