@@ -3,7 +3,7 @@ import { Navigation, HeroSection, AboutSection, ServicesSection, FeaturesGrid, S
 import { ScrollProgress, CustomStyles, LoadingAnimation } from '@/components/ui/home_ui.jsx';
 import Footer from '@/components/Footer';
 
-function App() {
+export default function LandingPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -39,5 +39,3 @@ function App() {
     </div>
   );
 }
-
-export default App;

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Calendar, Users, BarChart3, Clock, Globe, Zap, ArrowRight, Ticket, CreditCard, TrendingUp } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 
 // Floating Particles Component
 export const FloatingParticles = ({ count = 50 }) => {
@@ -73,7 +74,7 @@ export const HeroSection = () => {
         
         <div className="transform translate-y-12 opacity-0 animate-fadeInUp animation-delay-500">
           <button className="group bg-red-600 hover:bg-red-700 text-white px-12 py-4 rounded-lg text-lg font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-2xl">
-            Start Creating Events
+            <Link to="/login"> Start Creating Events</Link>
             <ArrowRight className="inline-block ml-2 group-hover:translate-x-1 transition-transform duration-300" />
           </button>
         </div>
@@ -290,6 +291,12 @@ export const StatisticsSection = () => {
 
 // Final CTA Section Component
 export const FinalCTASection = () => {
+
+  const navigate = useNavigate();
+  const handleClick = ()=>{
+    navigate("/login")
+  }
+
   return (
     <section className="relative py-32 bg-black overflow-hidden">
       {/* Concert Crowd Background */}
@@ -316,7 +323,7 @@ export const FinalCTASection = () => {
         </p>
         
         <div className="space-y-6 md:space-y-0 md:space-x-6 md:flex md:justify-center">
-          <button className="group bg-red-600 hover:bg-red-700 text-white px-12 py-4 rounded-lg text-lg font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-2xl w-full md:w-auto">
+          <button onClick={handleClick} className="group bg-red-600 hover:bg-red-700 text-white px-12 py-4 rounded-lg text-lg font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-2xl w-full md:w-auto">
             Get Started Today
             <ArrowRight className="inline-block ml-2 group-hover:translate-x-1 transition-transform duration-300" />
           </button>
@@ -359,7 +366,7 @@ export const Navigation = () => {
           </div>
           
           <button className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105">
-            Sign In
+           <Link to="/login">Sign In</Link> 
           </button>
         </div>
       </div>

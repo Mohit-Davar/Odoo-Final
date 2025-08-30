@@ -9,7 +9,7 @@ import HomePage from './pages/Home';
 import Profile from './pages/profile';
 import CreateIssue from './pages/CreateEvent';
 import MyIssues from './pages/myIssues';
-import Homepage from './pages/homePage';
+import LandingPage from './pages/Landing';
 import Attendes from './pages/Attendes';
 
 export default function App() {
@@ -25,7 +25,7 @@ export default function App() {
         <Route path='/issues' element={<MyIssues />} />
         </Route>
         <Route path='/login' element={<Login />} />
-        <Route path='/' element={<Homepage />} />
+        <Route path='/' element={<LandingPage />} />
         <Route path='/signup' element={<Signup />} />
         <Route path='*' element={<NotFound />} />
       </Routes>
