@@ -298,6 +298,7 @@ export const ImageUploadSection = ({
 export const SubmitButton = ({ 
   isSubmitting, 
   isValid, 
+  text,
   onClick 
 }) => (
   <div className="pt-6">
@@ -319,7 +320,7 @@ export const SubmitButton = ({
       ) : (
         <>
           <Send className="w-6 h-6" />
-          Submit Issue
+          {text}
         </>
       )}
     </button>

@@ -13,6 +13,7 @@
 
 html,
 body {
+  @apply bg-secondary text-accent antialiased;
     scroll-behavior: smooth;
     overflow-x: hidden;
 }
@@ -32,4 +33,29 @@ body {
 
 .react-grid-item.react-grid-placeholder {
     background: white !important;
+}
+
+
+@layer components {
+  .filter-dropdown {
+    @apply bg-secondary border border-supporting rounded-xl px-4 py-3 text-accent 
+           focus:outline-none focus:border-primary transition-colors duration-200
+           hover:border-supporting-light;
+  }
+  
+  .search-input {
+    @apply bg-secondary border border-supporting rounded-xl px-4 py-3 pr-12 text-accent 
+           placeholder-supporting focus:outline-none focus:border-primary 
+           transition-colors duration-200 hover:border-supporting-light;
+  }
+  
+  .attendee-row {
+    @apply border-b border-supporting-dark hover:bg-secondary-light 
+           transition-colors duration-200 cursor-pointer;
+  }
+  
+  .table-header {
+    @apply text-supporting-light font-medium text-sm uppercase tracking-wider 
+           pb-3 border-b-2 border-supporting-dark;
+  }
 }

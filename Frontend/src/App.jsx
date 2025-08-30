@@ -7,9 +7,10 @@ import NotFound from '@/pages/NotFound';
 import Signup from '@/pages/Signup';
 import Dashboard from './pages/dashboard';
 import Profile from './pages/profile';
-import CreateIssue from './pages/report';
+import CreateIssue from './pages/CreateEvent';
 import MyIssues from './pages/myIssues';
 import Homepage from './pages/homePage';
+import Attendes from './pages/Attendes';
 
 export default function App() {
   return (
@@ -18,7 +19,9 @@ export default function App() {
         <Route element={<UserLayout />}>
         <Route path='/dashboard' element={<Dashboard />} />
         <Route path='/profile' element={<Profile />} />
-        <Route path='/report' element={<CreateIssue />} />
+        <Route path='/attendes' element={<Attendes />} />
+        <Route path='/events/new' element={<CreateIssue />} />
+        <Route path="/events/edit/:eventId" element={<CreateIssue />} />
         <Route path='/issues' element={<MyIssues />} />
         </Route>
         <Route path='/login' element={<Login />} />
