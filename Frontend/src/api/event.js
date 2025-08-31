@@ -36,7 +36,7 @@ export const deleteIssue = async (id) => {
 };
 
 export const getIssueCategories = async () => {
-    const { data } = await api.get('/issues/categories');
+    const { data } = await api.get('/events/categories');
     return data;
 };
 
