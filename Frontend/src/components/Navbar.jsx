@@ -92,7 +92,9 @@ export default function Header() {
               </Link>
             </DropdownItem>
             <DropdownItem key="notifications" startContent={<Bell className="w-4 h-4" />} textValue="Notifications">
-              Notifications
+              <Link to="/notifications">
+                Notifications
+              </Link>
             </DropdownItem>
             <DropdownItem key="logout" color="danger" className="text-danger" startContent={<LogOut className="w-4 h-4" />} textValue="Log Out" onClick={logout}>
               Log Out
