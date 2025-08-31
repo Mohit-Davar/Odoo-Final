@@ -16,28 +16,68 @@ exports.createEvent = async (userID, eventData) => {
             start_date,
             end_date,
             images,
-            is_published // Changed from is_anonymous
+            is_published,
+            tickets // array of ticket objects
         } = eventData;
 
+        // Insert event
         const eventResult = await client.query(
-            `INSERT INTO events (user_id, title, description, category, location, coordinates, start_datetime, end_datetime, is_published)
-             VALUES ($1, $2, $3, $4, $5, ST_SetSRID(ST_MakePoint($6, $7), 4326), $8, $9, $10) RETURNING *`,
-            [userID, title, description, category_id, address, location.x, location.y, start_date, end_date, is_published] // Changed from is_anonymous
+            `INSERT INTO events 
+             (user_id, title, description, category, location, coordinates, start_datetime, end_datetime, is_published)
+             VALUES ($1, $2, $3, $4, $5, ST_SetSRID(ST_MakePoint($6, $7), 4326), $8, $9, $10) 
+             RETURNING *`,
+            [
+                userID,
+                title,
+                description,
+                category_id,
+                address,
+                location.x,
+                location.y,
+                start_date,
+                end_date,
+                is_published
+            ]
         );
+
         const newEvent = eventResult.rows[0];
 
+        // Insert images if provided
         if (images && images.length > 0) {
             const imagePromises = images.map((image, index) => {
                 return client.query(
-                    'INSERT INTO event_images (event_id, image_url, is_cover) VALUES ($1, $2, $3)',
+                    `INSERT INTO event_images (event_id, image_url, is_cover) 
+                     VALUES ($1, $2, $3)`,
                     [newEvent.id, image.base64, index === 0] // Set first image as cover
                 );
             });
             await Promise.all(imagePromises);
         }
 
+        // Insert tickets if provided
+        if (tickets && tickets.length > 0) {
+            const ticketPromises = tickets.map(ticket => {
+                return client.query(
+                    `INSERT INTO tickets 
+                     (event_id, type, price, sale_start, sale_end, max_quantity, per_user_limit) 
+                     VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+                    [
+                        newEvent.id,
+                        ticket.ticket_type_id,     // type -> references ticket_type(id)
+                        ticket.price,
+                        ticket.sales_start_date,
+                        ticket.sales_end_date,
+                        ticket.quantity,           // max_quantity
+                        ticket.max_per_user        // per_user_limit
+                    ]
+                );
+            });
+            await Promise.all(ticketPromises);
+        }
+
         await client.query('COMMIT');
         return newEvent;
+
     } catch (error) {
         await client.query('ROLLBACK');
         console.error(`[DATABASE] Error creating event: ${error.message}`);
