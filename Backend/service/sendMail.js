@@ -44,7 +44,7 @@ const emailTransporter = nodemailer.createTransport({
  * @example
  * sendEmail("Alert: Tanker Data", "Fuel level is low on tanker #5", "<h1>Fuel level is low on tanker #5</h1>", 3, "recipient@example.com");
  */
-function sendEmail(subject, text, html, retryCount = 3, receiver) {
+async function sendEmail (subject, text, html, retryCount = 3, receiver) {
     const mailOptions = {
         from: process.env.EMAIL,
         to: receiver,
@@ -54,7 +54,7 @@ function sendEmail(subject, text, html, retryCount = 3, receiver) {
     };
 
     try {
-        emailTransporter.sendMail(mailOptions);
+        await emailTransporter.sendMail(mailOptions);
         console.log(`\x1b[42m Email Sent: ${subject} \x1b[0m`);
     } catch (error) {
         console.error(`[${new Date().toLocaleString("en-GB")}] Error sending email: ${error.message}`);

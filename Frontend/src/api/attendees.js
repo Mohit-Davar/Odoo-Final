@@ -1,4 +1,10 @@
-import { api } from './BaseAPI';
+import { api } from "./BaseAPI";
+
+export const getBookingsByUser = async () => {
+    const response = await api.get("/events/my-bookings");
+    return response.data;
+};
+
 
 export const getAttendeesByEvent = async (eventId) => {
     const { data } = await api.get(`/events/${eventId}/attendees`);

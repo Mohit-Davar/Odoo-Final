@@ -7,11 +7,23 @@ import {
     Button,
     Chip,
     Divider,
+    Dropdown,
+    DropdownTrigger,
+    DropdownMenu,
+    DropdownItem,
 } from '@heroui/react';
-import { Users, Eye, MapPin, Calendar, X } from 'lucide-react';
+import {
+    Users,
+    Eye,
+    MapPin,
+    Calendar,
+    X,
+    Share2,
+    CalendarPlus,
+    MessageCircle,
+} from 'lucide-react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-// import 'slick-carousel/slick/slick.css';
-// import 'slick-carousel/slick/slick-theme.css';
+import { useNavigate } from 'react-router-dom';
 
 // Helper function for category colors
 const getCategoryColor = (category) => {
@@ -25,7 +37,183 @@ const getCategoryColor = (category) => {
     return colors[category] || 'bg-gray-600';
 };
 
+// Social sharing utilities
+const createShareUrl = (platform, eventData) => {
+    const { title, url } = eventData;
+    const encodedTitle = encodeURIComponent(title);
+
+    const shareUrls = {
+        whatsapp: `https://wa.me/?text=${encodedTitle}%20${encodeURIComponent(url)}`,
+    };
+
+    return shareUrls[platform];
+};
+
+// Calendar utilities
+const createCalendarData = (event) => {
+    const startDate = new Date(event.start_datetime);
+    const endDate = new Date(event.end_datetime);
+
+    const formatCalendarDate = (date) => {
+        return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+    };
+
+    return {
+        title: event.title,
+        description: event.description,
+        location: event.location,
+        startDate: formatCalendarDate(startDate),
+        endDate: formatCalendarDate(endDate),
+        startDateLocal: startDate,
+        endDateLocal: endDate
+    };
+};
+
+const createGoogleCalendarUrl = (calendarData) => {
+    const params = new URLSearchParams({
+        action: 'TEMPLATE',
+        text: calendarData.title,
+        dates: `${calendarData.startDate}/${calendarData.endDate}`,
+        details: calendarData.description,
+        location: calendarData.location
+    });
+
+    return `https://calendar.google.com/calendar/render?${params.toString()}`;
+};
+
+const createOutlookCalendarUrl = (calendarData) => {
+    const params = new URLSearchParams({
+        subject: calendarData.title,
+        startdt: calendarData.startDate,
+        enddt: calendarData.endDate,
+        body: calendarData.description,
+        location: calendarData.location
+    });
+
+    return `https://outlook.live.com/calendar/0/deeplink/compose?${params.toString()}`;
+};
+
+const downloadICSFile = (calendarData) => {
+    const icsContent = `BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Your App//Event//EN
+BEGIN:VEVENT
+UID:${Date.now()}@yourapp.com
+DTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').split('.')[0]}Z
+DTSTART:${calendarData.startDate}
+DTEND:${calendarData.endDate}
+SUMMARY:${calendarData.title}
+DESCRIPTION:${calendarData.description}
+LOCATION:${calendarData.location}
+END:VEVENT
+END:VCALENDAR`;
+
+    const blob = new Blob([icsContent], { type: 'text/calendar' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${calendarData.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.ics`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+};
+
+const ShareButtons = ({ event, currentUrl }) => {
+    const shareData = {
+        title: event.title,
+        description: event.description,
+        url: currentUrl
+    };
+
+    const handleShare = (platform) => {
+        const url = createShareUrl(platform, shareData);
+        window.open(url, '_blank', 'width=600,height=400');
+    };
+
+    const shareOptions = [
+        { key: 'whatsapp', label: 'WhatsApp', icon: MessageCircle },
+    ];
+
+    return (
+        <Dropdown>
+            <DropdownTrigger>
+                <Button
+                    variant="light"
+                    startContent={<Share2 size={18} />}
+                    className="text-[#666666] hover:text-[#f5f5f5]"
+                >
+                    Share
+                </Button>
+            </DropdownTrigger>
+            <DropdownMenu aria-label="Share options">
+                {shareOptions.map(({ key, label, icon: Icon }) => (
+                    <DropdownItem
+                        key={key}
+                        startContent={<Icon size={16} />}
+                        onPress={() => handleShare(key)}
+                    >
+                        {label}
+                    </DropdownItem>
+                ))}
+            </DropdownMenu>
+        </Dropdown>
+    );
+};
+
+const CalendarButtons = ({ event }) => {
+    const calendarData = createCalendarData(event);
+
+    const handleAddToCalendar = (type) => {
+        switch (type) {
+            case 'google':
+                window.open(createGoogleCalendarUrl(calendarData), '_blank');
+                break;
+            case 'outlook':
+                window.open(createOutlookCalendarUrl(calendarData), '_blank');
+                break;
+            case 'ics':
+                downloadICSFile(calendarData);
+                break;
+            default:
+                break;
+        }
+    };
+
+    const calendarOptions = [
+        { key: 'google', label: 'Google Calendar' },
+        { key: 'outlook', label: 'Outlook Calendar' },
+        { key: 'ics', label: 'Download ICS File' }
+    ];
+
+    return (
+        <Dropdown>
+            <DropdownTrigger>
+                <Button
+                    variant="light"
+                    startContent={<CalendarPlus size={18} />}
+                    className="text-[#666666] hover:text-[#f5f5f5]"
+                >
+                    Add to Calendar
+                </Button>
+            </DropdownTrigger>
+            <DropdownMenu aria-label="Calendar options">
+                {calendarOptions.map(({ key, label }) => (
+                    <DropdownItem
+                        key={key}
+                        onPress={() => handleAddToCalendar(key)}
+                    >
+                        {label}
+                    </DropdownItem>
+                ))}
+            </DropdownMenu>
+        </Dropdown>
+    );
+};
+
 const EventDetailModal = ({ isOpen, onClose, event }) => {
+    const navigate = useNavigate();
+
     if (!event) return null;
 
     // Format the start and end datetime for better display
@@ -44,8 +232,8 @@ const EventDetailModal = ({ isOpen, onClose, event }) => {
         hour12: true,
     }) + ` ${endDate.getDate()} ${endDate.toLocaleString('en-GB', { month: 'short', year: "numeric" })}`;
 
-
     const coordinates = [event.latitude, event.longitude];
+    const currentUrl = `${window.location.origin}/event/${event.id}`;
 
     return (
         <Modal
@@ -112,6 +300,12 @@ const EventDetailModal = ({ isOpen, onClose, event }) => {
                                 </div>
                             </div>
 
+                            {/* Action Buttons - Share and Calendar */}
+                            <div className="flex items-center gap-4 mb-6">
+                                <ShareButtons event={event} currentUrl={currentUrl} />
+                                <CalendarButtons event={event} />
+                            </div>
+
                             <Divider className="bg-[#666666]/30 mb-6" />
 
                             {/* Full Description */}
@@ -123,7 +317,7 @@ const EventDetailModal = ({ isOpen, onClose, event }) => {
                             </div>
 
                             {/* Image Gallery */}
-                            {event.images.length > 1 && (
+                            {event.images && event.images.length > 1 && (
                                 <div className="mt-4">
                                     <h4 className="mb-2 font-semibold text-[#f5f5f5] text-md">Event Gallery</h4>
                                     <div className="flex gap-3 overflow-x-auto">
@@ -184,8 +378,7 @@ const EventDetailModal = ({ isOpen, onClose, event }) => {
                             <Button
                                 className="bg-[#b71e09] hover:bg-[#b71e09]/80 font-medium text-[#f5f5f5]"
                                 onPress={() => {
-                                    // Handle join/register action
-                                    console.log('Join event:', event.event_id);
+                                    navigate("/register/event/" + event.id)
                                 }}
                             >
                                 Join Event

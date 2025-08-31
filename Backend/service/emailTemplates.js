@@ -294,4 +294,23 @@ function OTPEmail({ name, otp, email }) {
     `;
 }
 
-module.exports = { OTPEmail };
+function TicketEmail({ name, event, ticket, qrCode }) {
+    return `
+      <div style="font-family:sans-serif; padding:20px; background:#f9f9f9;">
+        <h2>🎟️ Hello ${name}, your ticket is confirmed!</h2>
+        <p>Thank you for registering for <b>${event.title}</b>.</p>
+        <p><b>Event:</b> ${event.title}<br/>
+           <b>Date:</b> ${new Date(event.start_date).toLocaleString()} - ${new Date(event.end_date).toLocaleString()}<br/>
+           <b>Location:</b> ${event.address}</p>
+        <p><b>Ticket Type:</b> ${ticket.ticket_type}</p>
+        <p>Please show this QR code at entry:</p>
+        <div style="margin:20px 0;">
+            <img src="${qrCode}" alt="QR Code Ticket" style="width:200px;"/>
+        </div>
+        <p>Enjoy the event 🎉</p>
+      </div>
+    `;
+}
+
+
+module.exports = { OTPEmail, TicketEmail };

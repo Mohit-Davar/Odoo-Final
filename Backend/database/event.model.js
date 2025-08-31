@@ -92,6 +92,29 @@ exports.getEvents = async () => {
     }
 };
 
+exports.getEventDetails = async (id) => {
+    try {
+        const event = await pool.query(
+            `SELECT e.id, e.title, e.description, e.start_datetime, e.end_datetime, e.location
+       FROM events e WHERE e.id = $1`,
+            [id]
+        );
+
+        const tickets = await pool.query(
+            `SELECT t.id, tt.type, tt.id as ticket_type_id, t.price, t.sale_start, t.sale_end, t.max_quantity, t.per_user_limit
+       FROM tickets t
+       JOIN ticket_type tt ON t.type = tt.id
+       WHERE t.event_id = $1`,
+            [id]
+        );
+
+        return { event: event.rows[0], tickets: tickets.rows };
+    } catch (error) {
+        console.error(`[DATABASE] Error getting events: ${error.message}`);
+        throw error;
+    }
+};
+
 
 exports.getEventsByProfile = async (userID) => {
     try {

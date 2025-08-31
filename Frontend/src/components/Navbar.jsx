@@ -14,6 +14,7 @@ import { Bell, Calendar, LogOut, PlusCircle, Ticket, User } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getUserProfile } from "@/api/users";
+import { useAuthStore } from "@/stores/authStore";
 
 export const Logo = () => {
   return (
@@ -31,7 +32,7 @@ export default function Header() {
     queryKey: ["currentUser"],
     queryFn: getUserProfile,
   });
-
+  const logout = useAuthStore((state) => state.logout);
   const navigate = useNavigate();
 
 
@@ -86,12 +87,16 @@ export default function Header() {
               </Link>
             </DropdownItem>
             <DropdownItem key="my_bookings" startContent={<Ticket className="w-4 h-4" />} textValue="My Bookings">
-              My Bookings
+              <Link to="/my-bookings">
+                My Bookings
+              </Link>
             </DropdownItem>
             <DropdownItem key="notifications" startContent={<Bell className="w-4 h-4" />} textValue="Notifications">
-              Notifications
+              <Link to="/notifications">
+                Notifications
+              </Link>
             </DropdownItem>
-            <DropdownItem key="logout" color="danger" className="text-danger" startContent={<LogOut className="w-4 h-4" />} textValue="Log Out">
+            <DropdownItem key="logout" color="danger" className="text-danger" startContent={<LogOut className="w-4 h-4" />} textValue="Log Out" onClick={logout}>
               Log Out
             </DropdownItem>
           </DropdownMenu>

@@ -5,10 +5,20 @@ export const getEvents = async () => {
     return data;
 };
 
+export const getEventsByBooking = async () => {
+    const { data } = await api.get('/events/booking');
+    return data;
+}
+
 export const getEventsByProfile = async () => {
     const { data } = await api.get('/events/profile');
     return data;
 };
+
+export const getEventDetails = async (id) => {
+    const { data } = await api.get(`/events/details/${id}`);
+    return data;
+}
 
 export const getIssueById = async (id) => {
     const { data } = await api.get(`/events/${id}`);
