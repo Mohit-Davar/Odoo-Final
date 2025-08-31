@@ -23,6 +23,7 @@ router.route('/statuses')
     .get(event.getEventStatuses);
 
 router.route("/edit/:id")
+    .get(event.getEventById)
     .put(upload.array('images', 5), event.updateEvent)
 
 // Photos

@@ -21,7 +21,7 @@ export const getEventDetails = async (id) => {
 }
 
 export const getIssueById = async (id) => {
-    const { data } = await api.get(`/events/${id}`);
+    const { data } = await api.get(`/events/edit/${id}`);
     return data;
 };
 

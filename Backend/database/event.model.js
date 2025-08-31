@@ -217,11 +217,17 @@ exports.getEventsByProfile = async (userID) => {
 
 exports.getEventById = async (id) => {
     try {
+        // Fetch event with coordinates
         const eventResult = await pool.query(
-            `SELECT e.*, ST_X(e.coordinates::geometry) as lon, ST_Y(e.coordinates::geometry) as lat
-             FROM events e WHERE e.id = $1`, [id]);
-        if (eventResult.rows.length === 0) return null;
+            `SELECT e.*, 
+                    ST_X(e.coordinates::geometry) as lon, 
+                    ST_Y(e.coordinates::geometry) as lat
+             FROM events e 
+             WHERE e.id = $1`, 
+            [id]
+        );
 
+        if (eventResult.rows.length === 0) return null;
         const event = eventResult.rows[0];
 
         const response = {
@@ -233,14 +239,38 @@ exports.getEventById = async (id) => {
             category_id: event.category,
             start_date: event.start_datetime,
             end_date: event.end_datetime,
-            is_published: event.is_published, // Changed from is_anonymous
+            is_published: event.is_published,
         };
 
-        const imagesResult = await pool.query('SELECT id, image_url, is_cover FROM event_images WHERE event_id = $1', [id]);
+        // Fetch event images
+        const imagesResult = await pool.query(
+            `SELECT id, image_url, is_cover 
+             FROM event_images 
+             WHERE event_id = $1`, 
+            [id]
+        );
         response.images = imagesResult.rows.map(img => ({
             id: img.id,
             preview: img.image_url,
+            is_cover: img.is_cover
         }));
+
+        // Fetch event tickets
+        const ticketsResult = await pool.query(
+            `SELECT t.id, 
+                    t.type as ticket_type_id, 
+                    tt.type as ticket_type_name, 
+                    t.price, 
+                    t.sale_start as sales_start_date, 
+                    t.sale_end as sales_end_date, 
+                    t.max_quantity as quantity, 
+                    t.per_user_limit as max_per_user
+             FROM tickets t
+             JOIN ticket_type tt ON t.type = tt.id
+             WHERE t.event_id = $1`, 
+            [id]
+        );
+        response.tickets = ticketsResult.rows;
 
         return response;
     } catch (error) {
@@ -253,18 +283,21 @@ exports.updateEvent = async (id, eventData) => {
     const client = await pool.connect();
     try {
         await client.query('BEGIN');
+
         const {
             category_id,
             title,
             description,
-            location, // coordinates
+            location, // coordinates {x, y}
             address, // location string
             start_date,
             end_date,
             images,
-            is_published // Changed from is_anonymous
+            is_published,
+            tickets // array of ticket objects
         } = eventData;
 
+        // Update event
         const result = await client.query(
             `UPDATE events SET 
                 category = $1, 
@@ -274,20 +307,55 @@ exports.updateEvent = async (id, eventData) => {
                 location = $6, 
                 start_datetime = $7, 
                 end_datetime = $8, 
-                is_published = $9 -- Changed from is_anonymous
+                is_published = $9
              WHERE id = $10 RETURNING *`,
-            [category_id, title, description, location.x, location.y, address, start_date, end_date, is_published, id] // Changed from is_anonymous
+            [
+                category_id,
+                title,
+                description,
+                location.x,
+                location.y,
+                address,
+                start_date,
+                end_date,
+                is_published,
+                id
+            ]
         );
 
+        // Replace event images
         await client.query('DELETE FROM event_images WHERE event_id = $1', [id]);
         if (images && images.length > 0) {
             const imagePromises = images.map((image, index) => {
                 return client.query(
-                    'INSERT INTO event_images (event_id, image_url, is_cover) VALUES ($1, $2, $3)',
+                    `INSERT INTO event_images (event_id, image_url, is_cover) 
+                     VALUES ($1, $2, $3)`,
                     [id, image.base64, index === 0]
                 );
             });
             await Promise.all(imagePromises);
+        }
+
+        // Replace event tickets
+        await client.query('DELETE FROM tickets WHERE event_id = $1', [id]);
+        if (tickets && tickets.length > 0) {
+            const ticketPromises = tickets.map(ticket => {
+                return client.query(
+                    `INSERT INTO tickets 
+                     (event_id, type, price, sale_start, sale_end, max_quantity, per_user_limit) 
+                     VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+                    [
+                        id,
+                        ticket.ticket_type_id,   // references ticket_type(id)
+                        ticket.price,
+                        ticket.sales_start_date,
+                        ticket.sales_end_date,
+                        ticket.quantity,         // max_quantity
+                        ticket.max_per_user      // per_user_limit
+                    ]
+                );
+            });
+            await Promise.all(ticketPromises);
         }
 
         await client.query('COMMIT');
@@ -300,6 +368,7 @@ exports.updateEvent = async (id, eventData) => {
         client.release();
     }
 };
+
 
 exports.deleteEvent = async (id) => {
     try {
