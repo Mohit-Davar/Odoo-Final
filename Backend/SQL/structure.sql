@@ -82,6 +82,5 @@ CREATE TABLE event_notifications (
     message TEXT NOT NULL,
     notified BOOLEAN DEFAULT FALSE,
     notify_at TIMESTAMPTZ NOT NULL,
-    -- When to notify
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );

@@ -47,36 +47,36 @@ const MyEvents = () => {
 
     return (
         <>
-<div className="py-20 min-h-screen bg-black text-white">
-    <div>
-        <div className="space-y-6 mx-auto max-w-7xl">
-            {/* Page Title */}
-            <div className="text-center mb-12">
-                <h1 className="text-6xl md:text-7xl font-bold mb-4 bg-gradient-to-r from-white via-zinc-200 to-zinc-400 bg-clip-text text-primary">
-                   My Events
-                </h1>
-                <p className="text-xl text-zinc-400">Manage and view all your events</p>
-            </div>
+            <div className="bg-black py-20 min-h-screen text-white">
+                <div>
+                    <div className="space-y-6 mx-auto max-w-7xl">
+                        {/* Page Title */}
+                        <div className="mb-12 text-center">
+                            <h1 className="bg-clip-text bg-gradient-to-r from-white via-zinc-200 to-zinc-400 mb-4 font-bold text-primary text-6xl md:text-7xl">
+                                My Events
+                            </h1>
+                            <p className="text-zinc-400 text-xl">Manage and view all your events</p>
+                        </div>
 
-            {/* Events Grid */}
-            <div className="gap-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-                {events.length > 0 ? (
-                    events.map((event) => (
-                        <EventCard
-                            key={event.id}
-                            event={event}
-                            onClick={() => navigate("/events/edit/" + event.id)}
-                        />
-                    ))
-                ) : (
-                    <div className="col-span-full py-10 text-zinc-500 text-center">
-                        No events found.
+                        {/* Events Grid */}
+                        <div className="gap-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+                            {events.length > 0 ? (
+                                events.map((event) => (
+                                    <EventCard
+                                        key={event.id}
+                                        event={event}
+                                        onClick={() => navigate("/events/edit/" + event.id)}
+                                    />
+                                ))
+                            ) : (
+                                <div className="col-span-full py-10 text-zinc-500 text-center">
+                                    No events found.
+                                </div>
+                            )}
+                        </div>
                     </div>
-                )}
+                </div>
             </div>
-        </div>
-    </div>
-</div>
         </>
     );
 };

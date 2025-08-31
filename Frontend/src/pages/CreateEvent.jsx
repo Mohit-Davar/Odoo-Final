@@ -9,7 +9,7 @@ import {
   SubmitButton,
   Toast,
   Footer,
-} from "@/components/report_ui";
+} from "@/components/ui/Create_Event_UI";
 import {
   ArrowLeft,
   Calendar as CalendarIcon,
@@ -333,8 +333,8 @@ const ticketTypes = [
 // Component for a single ticket type row
 const TicketRow = ({ index, control, remove, errors }) => {
   return (
-    <div className="bg-gray-50 p-4 border rounded-lg space-y-4 relative">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className="relative space-y-4 bg-gray-50 p-4 border rounded-lg">
+        <div className="gap-4 grid grid-cols-1 md:grid-cols-2">
             {/* Ticket Type Dropdown */}
             <Controller
                 name={`tickets.${index}.ticket_type`}
@@ -368,7 +368,7 @@ const TicketRow = ({ index, control, remove, errors }) => {
                 )}
             />
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="gap-4 grid grid-cols-1 md:grid-cols-2">
              {/* Quantity */}
             <Controller
                 name={`tickets.${index}.quantity`}
@@ -392,7 +392,7 @@ const TicketRow = ({ index, control, remove, errors }) => {
                 )}
             />
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="gap-4 grid grid-cols-1 md:grid-cols-2">
             {/* Sales Start */}
             <Controller
                 name={`tickets.${index}.salesStart`}
@@ -419,7 +419,7 @@ const TicketRow = ({ index, control, remove, errors }) => {
         <button
             type="button"
             onClick={() => remove(index)}
-            className="absolute top-2 right-2 text-gray-400 hover:text-red-600 transition-colors"
+            className="top-2 right-2 absolute text-gray-400 hover:text-red-600 transition-colors"
             aria-label="Remove Ticket"
         >
             <Trash2 className="w-5 h-5" />
@@ -1045,7 +1045,7 @@ const CreateEditEvent = () => {
                     salesStart: new Date(), 
                     salesEnd: new Date() 
                 })}
-                className="flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium transition-colors"
+                className="flex items-center gap-2 font-medium text-blue-600 hover:text-blue-800 transition-colors"
               >
                 <PlusCircle className="w-5 h-5" />
                 Add Ticket Type

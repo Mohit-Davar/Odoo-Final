@@ -1,4 +1,3 @@
-import React from 'react';
 
 // Custom CSS animations and utilities
 export const CustomStyles = () => (
@@ -221,155 +220,12 @@ export const CustomStyles = () => (
 
 // Loading Animation Component
 export const LoadingAnimation = () => (
-  <div className="fixed inset-0 bg-black z-50 flex items-center justify-center">
+  <div className="z-50 fixed inset-0 flex justify-center items-center bg-black">
     <div className="text-center">
-      <div className="text-4xl font-black text-white mb-4 animate-glow">
+      <div className="mb-4 font-black text-white text-4xl animate-glow">
         EVENT<span className="text-red-600">HIVE</span>
       </div>
-      <div className="w-16 h-1 bg-red-600 mx-auto animate-pulse"></div>
+      <div className="bg-red-600 mx-auto w-16 h-1 animate-pulse"></div>
     </div>
-  </div>
-);
-
-// Scroll Progress Indicator
-export const ScrollProgress = () => {
-  const [scrollProgress, setScrollProgress] = React.useState(0);
-
-  React.useEffect(() => {
-    const handleScroll = () => {
-      const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const progress = (window.scrollY / totalHeight) * 100;
-      setScrollProgress(progress);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  return (
-    <div className="fixed top-0 left-0 w-full h-1 bg-gray-900 z-50">
-      <div 
-        className="h-full bg-gradient-to-r from-red-600 to-red-400 transition-all duration-100 ease-out"
-        style={{ width: `${scrollProgress}%` }}
-      />
-    </div>
-  );
-};
-
-// Animated Counter Hook
-export const useAnimatedCounter = (end, duration = 2000, start = 0) => {
-  const [count, setCount] = React.useState(start);
-
-  React.useEffect(() => {
-    const startTime = Date.now();
-    const timer = setInterval(() => {
-      const elapsed = Date.now() - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      const current = Math.floor(progress * (end - start) + start);
-      setCount(current);
-      
-      if (progress === 1) {
-        clearInterval(timer);
-      }
-    }, 16);
-
-    return () => clearInterval(timer);
-  }, [end, duration, start]);
-
-  return count;
-};
-
-// Intersection Observer Hook for Animations
-export const useIntersectionObserver = (options = {}) => {
-  const [isIntersecting, setIsIntersecting] = React.useState(false);
-  const ref = React.useRef(null);
-
-  React.useEffect(() => {
-    const observer = new IntersectionObserver(([entry]) => {
-      setIsIntersecting(entry.isIntersecting);
-    }, {
-      threshold: 0.3,
-      ...options
-    });
-
-    if (ref.current) {
-      observer.observe(ref.current);
-    }
-
-    return () => {
-      if (ref.current) {
-        observer.unobserve(ref.current);
-      }
-    };
-  }, []);
-
-  return [ref, isIntersecting];
-};
-
-// Particle System Hook
-export const useParticleSystem = (count = 50) => {
-  const [particles, setParticles] = React.useState([]);
-
-  React.useEffect(() => {
-    const newParticles = Array.from({ length: count }, (_, i) => ({
-      id: i,
-      x: Math.random() * 100,
-      y: Math.random() * 100,
-      size: Math.random() * 3 + 1,
-      speed: Math.random() * 2 + 0.5,
-      direction: Math.random() * 360,
-      opacity: Math.random() * 0.5 + 0.1,
-    }));
-    setParticles(newParticles);
-  }, [count]);
-
-  return particles;
-};
-
-// Background Video Component (for future enhancement)
-export const BackgroundVideo = ({ src, className = "" }) => (
-  <div className={`absolute inset-0 overflow-hidden ${className}`}>
-    <video
-      autoPlay
-      loop
-      muted
-      playsInline
-      className="absolute inset-0 w-full h-full object-cover opacity-40"
-    >
-      <source src={src} type="video/mp4" />
-    </video>
-    <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-transparent to-black/70"></div>
-  </div>
-);
-
-// Utility Components
-export const SectionDivider = () => (
-  <div className="relative py-8">
-    <div className="absolute inset-0 flex items-center">
-      <div className="w-full border-t border-gray-800"></div>
-    </div>
-    <div className="relative flex justify-center">
-      <div className="w-8 h-8 bg-red-600 rounded-full flex items-center justify-center">
-        <div className="w-2 h-2 bg-white rounded-full"></div>
-      </div>
-    </div>
-  </div>
-);
-
-export const GlitchText = ({ children, className = "" }) => (
-  <div className={`relative ${className}`}>
-    <span className="relative z-10">{children}</span>
-    <span 
-      className="absolute top-0 left-0 text-red-600 opacity-20 animate-pulse"
-      style={{ transform: 'translate(2px, 2px)' }}
-    >
-      {children}
-    </span>
-    <span 
-      className="absolute top-0 left-0 text-blue-600 opacity-10 animate-pulse"
-      style={{ transform: 'translate(-2px, -2px)', animationDelay: '0.1s' }}
-    >
-      {children}
-    </span>
   </div>
 );

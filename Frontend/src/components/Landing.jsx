@@ -41,7 +41,7 @@ export const FloatingParticles = ({ count = 50 }) => {
 // Hero Section Component
 export const HeroSection = () => {
   return (
-    <section className="relative flex justify-center items-center bg-black min-h-screen overflow-hidden">
+    <section id="hero" className="relative flex justify-center items-center bg-black min-h-screen overflow-hidden">
       {/* Background Image with Red Overlay */}
       <div className="absolute inset-0">
         <div
@@ -89,7 +89,7 @@ export const HeroSection = () => {
 // About Section Component
 export const AboutSection = () => {
   return (
-    <section className="relative bg-black py-24 overflow-hidden">
+    <section id="about" className="relative bg-black py-24 overflow-hidden">
       {/* Background with Red Overlay */}
       <div className="absolute inset-0">
         <div
@@ -132,7 +132,7 @@ export const AboutSection = () => {
 // Services Section Component
 export const ServicesSection = () => {
   return (
-    <section className="relative bg-gray-900 py-24 overflow-hidden">
+    <section id="services" className="relative bg-gray-900 py-24 overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0">
         <div
@@ -185,7 +185,7 @@ export const FeaturesGrid = () => {
   ];
 
   return (
-    <section className="relative bg-black py-24 overflow-hidden">
+    <section id="features" className="relative bg-black py-24 overflow-hidden">
       {/* Background with Geometric Overlay */}
       <div className="absolute inset-0">
         <div
@@ -244,7 +244,7 @@ export const StatisticsSection = () => {
   ];
 
   return (
-    <section className="relative bg-gray-900 py-24 overflow-hidden">
+    <section id="statistics" className="relative bg-gray-900 py-24 overflow-hidden">
       {/* Bokeh Background */}
       <div className="absolute inset-0">
         <div
@@ -298,7 +298,7 @@ export const FinalCTASection = () => {
   }
 
   return (
-    <section className="relative bg-black py-32 overflow-hidden">
+    <section id="contact" className="relative bg-black py-32 overflow-hidden">
       {/* Concert Crowd Background */}
       <div className="absolute inset-0">
         <div
@@ -338,19 +338,9 @@ export const FinalCTASection = () => {
 
 // Navigation Component
 export const Navigation = () => {
-  const [isScrolled, setIsScrolled] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-black/90 backdrop-blur-md border-b border-gray-800' : 'bg-transparent'
-      }`}>
+    <nav
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-black/90 backdrop-blur-md border-b border-gray-800`}>
       <div className="mx-auto px-6 py-4 max-w-7xl">
         <div className="flex justify-between items-center">
           <div className="font-black text-white text-2xl">
@@ -358,10 +348,10 @@ export const Navigation = () => {
           </div>
 
           <div className="hidden md:flex space-x-8">
-            <a href="#" className="font-medium text-gray-300 hover:text-red-600 transition-colors duration-300">Features</a>
-            <a href="#" className="font-medium text-gray-300 hover:text-red-600 transition-colors duration-300">Pricing</a>
-            <a href="#" className="font-medium text-gray-300 hover:text-red-600 transition-colors duration-300">About</a>
-            <a href="#" className="font-medium text-gray-300 hover:text-red-600 transition-colors duration-300">Contact</a>
+            <a href="#features" className="font-medium text-gray-300 hover:text-red-600 transition-colors duration-300">Features</a>
+            <a href="#services" className="font-medium text-gray-300 hover:text-red-600 transition-colors duration-300">Services</a>
+            <a href="#about" className="font-medium text-gray-300 hover:text-red-600 transition-colors duration-300">About</a>
+            <a href="#contact" className="font-medium text-gray-300 hover:text-red-600 transition-colors duration-300">Contact</a>
           </div>
 
           <button className="bg-red-600 hover:bg-red-700 px-6 py-2 rounded-lg font-semibold text-white hover:scale-105 transition-all duration-300 transform">

@@ -5,25 +5,7 @@ import {
     Chip,
     Divider,
 } from '@heroui/react';
-import { Users, Eye } from 'lucide-react';
-
-// Helper function for category colors
-const getCategoryColor = (category) => {
-    const colors = {
-        'Music': 'bg-purple-600',
-        'Art': 'bg-blue-600',
-        'Dance': 'bg-pink-600',
-        'Concert': 'bg-red-600',
-        'Competition': 'bg-indigo-600',
-        'Workshop': 'bg-yellow-600',
-        'Standup': 'bg-green-600',
-        'Theatre': 'bg-orange-600',
-        'Games': 'bg-teal-600',
-        'Meetup': 'bg-teal-600',
-        'Other': 'bg-gray-600',
-    };
-    return colors[category]
-};
+import { getCategoryColor } from './utils';
 
 
 const EventCard = ({ event, onClick }) => {
@@ -34,7 +16,6 @@ const EventCard = ({ event, onClick }) => {
         return formattedDate
     }
 
-    // Choose the cover image (if exists)
     const coverImage = event.images.find((img) => img.is_cover) || event.images[0];
 
     const truncatedDescription = event.description.length > 100
@@ -43,7 +24,7 @@ const EventCard = ({ event, onClick }) => {
 
     return (
         <Card
-            className="bg-zinc-900 p-5 shadow-sm shadow-white  transition-all duration-300 cursor-pointer"
+            className="bg-zinc-900 p-5 transition-all duration-300 cursor-pointer"
             isPressable
             onPress={() => onClick(event)}
 
@@ -53,7 +34,7 @@ const EventCard = ({ event, onClick }) => {
                     <img
                         src={coverImage.image_url}
                         alt={event.title}
-                        className="w-full h-full rounded-md object-bottom object-cover"
+                        className="rounded-md w-full h-full object-bottom object-cover"
                     />
                     <div className="top-3 left-3 absolute">
                         <Chip
@@ -80,22 +61,9 @@ const EventCard = ({ event, onClick }) => {
 
                 <Divider className="bg-zinc-800" />
 
-                <div className="flex justify-between items-center gap-2">
-                    {/* Location */}
-                    <div className="text-zinc-500 text-sm">
-                        <span>{event.location}</span>
-                    </div>
-                    {/* Stats */}
-                    <div className="flex items-center gap-4 text-zinc-500 text-sm">
-                        <div className="flex items-center gap-1">
-                            <Users size={16} />
-                            <span>{event.attendees}</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                            <Eye size={16} />
-                            <span>{event.views}</span>
-                        </div>
-                    </div>
+                {/* Location */}
+                <div className="text-zinc-500 text-sm">
+                    <span>{event.location}</span>
                 </div>
             </CardBody>
         </Card>
