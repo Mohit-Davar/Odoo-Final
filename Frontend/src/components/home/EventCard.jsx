@@ -43,7 +43,7 @@ const EventCard = ({ event, onClick }) => {
 
     return (
         <Card
-            className="bg-zinc-900 transition-all duration-300 cursor-pointer"
+            className="bg-zinc-900 p-5 shadow-sm shadow-white  transition-all duration-300 cursor-pointer"
             isPressable
             onPress={() => onClick(event)}
 
@@ -53,7 +53,7 @@ const EventCard = ({ event, onClick }) => {
                     <img
                         src={coverImage.image_url}
                         alt={event.title}
-                        className="w-full h-full object-bottom object-cover"
+                        className="w-full h-full rounded-md object-bottom object-cover"
                     />
                     <div className="top-3 left-3 absolute">
                         <Chip

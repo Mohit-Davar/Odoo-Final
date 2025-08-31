@@ -2,7 +2,7 @@ import { ArrowRight, Linkedin, Facebook, Twitter, Instagram } from 'lucide-react
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-50 border-gray-200 border-t">
+    <footer className=" bg-black text-white border-gray-200 border-t">
       {/* Main Footer Section */}
       <div className="mx-auto px-6 lg:px-8 py-16 max-w-7xl">
         {/* Top Section: Let's Connect */}
@@ -15,7 +15,7 @@ const Footer = () => {
                   LET&#39;S
                 </span>
               </div>
-              <span className="font-bold text-black text-3xl lg:text-4xl tracking-tight">
+              <span className="font-bold text-white text-3xl lg:text-4xl tracking-tight">
                 CONNECT
               </span>
             </div>
@@ -25,31 +25,31 @@ const Footer = () => {
           </div>
 
           {/* Social Media */}
-          <div className="flex space-x-4">
+          <div className="flex space-x-4 text-white">
             <a 
               href="#" 
-              className="flex justify-center items-center border border-gray-300 hover:border-red-600 rounded-full w-12 h-12 text-gray-600 hover:text-red-600 hover:scale-110 transition-all duration-300"
+              className="flex justify-center items-center border border-white hover:border-red-600 rounded-full w-12 h-12 text-white hover:text-red-600 hover:scale-110 transition-all duration-300"
               aria-label="LinkedIn"
             >
               <Linkedin className="w-5 h-5" />
             </a>
             <a 
               href="#" 
-              className="flex justify-center items-center border border-gray-300 hover:border-red-600 rounded-full w-12 h-12 text-gray-600 hover:text-red-600 hover:scale-110 transition-all duration-300"
+              className="flex justify-center items-center border border-white hover:border-red-600 rounded-full w-12 h-12 text-white hover:text-red-600 hover:scale-110 transition-all duration-300"
               aria-label="Facebook"
             >
               <Facebook className="w-5 h-5" />
             </a>
             <a 
               href="#" 
-              className="flex justify-center items-center border border-gray-300 hover:border-red-600 rounded-full w-12 h-12 text-gray-600 hover:text-red-600 hover:scale-110 transition-all duration-300"
+              className="flex justify-center items-center border border-white hover:border-red-600 rounded-full w-12 h-12 text-white hover:text-red-600 hover:scale-110 transition-all duration-300"
               aria-label="Twitter"
             >
               <Twitter className="w-5 h-5" />
             </a>
             <a 
               href="#" 
-              className="flex justify-center items-center border border-gray-300 hover:border-red-600 rounded-full w-12 h-12 text-gray-600 hover:text-red-600 hover:scale-110 transition-all duration-300"
+              className="flex justify-center items-center border border-white hover:border-red-600 rounded-full w-12 h-12 text-white hover:text-red-600 hover:scale-110 transition-all duration-300"
               aria-label="Instagram"
             >
               <Instagram className="w-5 h-5" />
@@ -58,7 +58,7 @@ const Footer = () => {
         </div>
 
         {/* Footer Links Grid */}
-        <div className="gap-8 lg:gap-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+        <div className="gap-8 lg:gap-12 text-white grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
           {/* Legal Column */}
           <div>
             <h3 className="mb-6 font-semibold text-black text-sm uppercase tracking-wider">
@@ -68,7 +68,7 @@ const Footer = () => {
               <li>
                 <a 
                   href="#" 
-                  className="text-gray-600 hover:text-red-600 text-sm transition-colors duration-200"
+                  className="text-white hover:text-red-600 text-sm transition-colors duration-200"
                 >
                   Privacy Policy
                 </a>
@@ -76,7 +76,7 @@ const Footer = () => {
               <li>
                 <a 
                   href="#" 
-                  className="text-gray-600 hover:text-red-600 text-sm transition-colors duration-200"
+                  className="text-white hover:text-red-600 text-sm transition-colors duration-200"
                 >
                   Terms of Service
                 </a>
@@ -84,7 +84,7 @@ const Footer = () => {
               <li>
                 <a 
                   href="#" 
-                  className="text-gray-600 hover:text-red-600 text-sm transition-colors duration-200"
+                  className="text-white hover:text-red-600 text-sm transition-colors duration-200"
                 >
                   Cookie Policy
                 </a>
@@ -101,7 +101,7 @@ const Footer = () => {
               <li>
                 <a 
                   href="mailto:hello@eventhive.com" 
-                  className="block text-gray-600 hover:text-red-600 text-sm transition-colors duration-200"
+                  className="block text-white hover:text-red-600 text-sm transition-colors duration-200"
                 >
                   hello@eventhive.com
                 </a>
@@ -109,13 +109,13 @@ const Footer = () => {
               <li>
                 <a 
                   href="tel:+919877132536" 
-                  className="block text-gray-600 hover:text-red-600 text-sm transition-colors duration-200"
+                  className="block text-white hover:text-red-600 text-sm transition-colors duration-200"
                 >
                   +91 9877132536
                 </a>
               </li>
               <li>
-                <span className="block text-gray-600 text-sm">
+                <span className="block text-white text-sm">
                   Panjab University, Chandigarh
                 </span>
               </li>
@@ -131,7 +131,7 @@ const Footer = () => {
               <li>
                 <a 
                   href="#" 
-                  className="text-gray-600 hover:text-red-600 text-sm transition-colors duration-200"
+                  className="text-white hover:text-red-600 text-sm transition-colors duration-200"
                 >
                   Event Creation
                 </a>
@@ -139,7 +139,7 @@ const Footer = () => {
               <li>
                 <a 
                   href="#" 
-                  className="text-gray-600 hover:text-red-600 text-sm transition-colors duration-200"
+                  className="text-white hover:text-red-600 text-sm transition-colors duration-200"
                 >
                   Ticketing
                 </a>
@@ -147,7 +147,7 @@ const Footer = () => {
               <li>
                 <a 
                   href="#" 
-                  className="text-gray-600 hover:text-red-600 text-sm transition-colors duration-200"
+                  className="text-white hover:text-red-600 text-sm transition-colors duration-200"
                 >
                   Analytics
                 </a>
@@ -155,7 +155,7 @@ const Footer = () => {
               <li>
                 <a 
                   href="#" 
-                  className="text-gray-600 hover:text-red-600 text-sm transition-colors duration-200"
+                  className="text-white hover:text-red-600 text-sm transition-colors duration-200"
                 >
                   Support Center
                 </a>
@@ -172,7 +172,7 @@ const Footer = () => {
               <li>
                 <a 
                   href="#" 
-                  className="text-gray-600 hover:text-red-600 text-sm transition-colors duration-200"
+                  className="text-white hover:text-red-600 text-sm transition-colors duration-200"
                 >
                   About Us
                 </a>
@@ -180,7 +180,7 @@ const Footer = () => {
               <li>
                 <a 
                   href="#" 
-                  className="text-gray-600 hover:text-red-600 text-sm transition-colors duration-200"
+                  className="text-white hover:text-red-600 text-sm transition-colors duration-200"
                 >
                   Careers
                 </a>
@@ -188,7 +188,7 @@ const Footer = () => {
               <li>
                 <a 
                   href="#" 
-                  className="text-gray-600 hover:text-red-600 text-sm transition-colors duration-200"
+                  className="text-white hover:text-red-600 text-sm transition-colors duration-200"
                 >
                   Blog
                 </a>
@@ -196,7 +196,7 @@ const Footer = () => {
               <li>
                 <a 
                   href="#" 
-                  className="text-gray-600 hover:text-red-600 text-sm transition-colors duration-200"
+                  className="text-white hover:text-red-600 text-sm transition-colors duration-200"
                 >
                   Press Kit
                 </a>
@@ -207,15 +207,15 @@ const Footer = () => {
       </div>
 
       {/* Bottom Section */}
-      <div className="bg-white border-gray-200 border-t">
+      <div className="bg-black text-white border-gray-200 border-t">
         <div className="mx-auto px-6 lg:px-8 py-6 max-w-7xl">
           <div className="flex md:flex-row flex-col md:justify-between md:items-center">
             <div className="flex items-center mb-4 md:mb-0">
-              <span className="font-bold text-black text-xl tracking-tight">
+              <span className="font-bold text-white text-xl tracking-tight">
                 EventHive
               </span>
             </div>
-            <p className="text-gray-600 text-sm">
+            <p className="text-white text-sm">
               © 2025 EventHive. All rights reserved.
             </p>
           </div>

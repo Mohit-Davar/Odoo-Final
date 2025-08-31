@@ -21,7 +21,7 @@ export const getEventDetails = async (id) => {
 }
 
 export const getIssueById = async (id) => {
-    const { data } = await api.get(`/issues/${id}`);
+    const { data } = await api.get(`/events/${id}`);
     return data;
 };
 
@@ -36,7 +36,7 @@ export const createIssue = async (issue) => {
 };
 
 export const updateIssue = async (id, issue) => {
-    const { data } = await api.put(`/issues/${id}`, issue);
+    const { data } = await api.put(`/events/edit/${id}`, issue);
     return data;
 };
 
@@ -46,7 +46,7 @@ export const deleteIssue = async (id) => {
 };
 
 export const getIssueCategories = async () => {
-    const { data } = await api.get('/issues/categories');
+    const { data } = await api.get('/events/categories');
     return data;
 };
 

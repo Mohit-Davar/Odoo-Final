@@ -18,6 +18,9 @@ router.route('/categories')
 router.route('/statuses')
     .get(event.getEventStatuses);
 
+router.route("/edit/:id")
+    .put(event.updateEvent)
+
 // Photos
 router.route('/photos')
     .post(event.addEventPhoto);

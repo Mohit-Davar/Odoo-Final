@@ -15,14 +15,14 @@ exports.createEvent = async (userID, eventData) => {
             address, // location string
             start_date,
             end_date,
-            status_id,
-            images
+            images,
+            is_published // Changed from is_anonymous
         } = eventData;
 
         const eventResult = await client.query(
-            `INSERT INTO events (user_id, title, description, category, location, coordinates, start_datetime, end_datetime, status)
+            `INSERT INTO events (user_id, title, description, category, location, coordinates, start_datetime, end_datetime, is_published)
              VALUES ($1, $2, $3, $4, $5, ST_SetSRID(ST_MakePoint($6, $7), 4326), $8, $9, $10) RETURNING *`,
-            [userID, title, description, category_id, address, location.x, location.y, start_date, end_date, status_id]
+            [userID, title, description, category_id, address, location.x, location.y, start_date, end_date, is_published] // Changed from is_anonymous
         );
         const newEvent = eventResult.rows[0];
 
@@ -77,6 +77,8 @@ exports.getEvents = async () => {
                 event_categories ec ON e.category = ec.id
             LEFT JOIN 
                 event_images ei ON e.id = ei.event_id
+            WHERE 
+                e.is_published = TRUE
             GROUP BY 
                 e.id, ec.category
             ORDER BY 
@@ -174,10 +176,10 @@ exports.getEventById = async (id) => {
             description: event.description,
             address: event.location, // text address
             location: { x: event.lon, y: event.lat }, // geo object
-            category_id: event.category_id,
+            category_id: event.category,
             start_date: event.start_datetime,
             end_date: event.end_datetime,
-            status_id: event.status,
+            is_published: event.is_published, // Changed from is_anonymous
         };
 
         const imagesResult = await pool.query('SELECT id, image_url, is_cover FROM event_images WHERE event_id = $1', [id]);
@@ -205,22 +207,22 @@ exports.updateEvent = async (id, eventData) => {
             address, // location string
             start_date,
             end_date,
-            status_id,
-            images
+            images,
+            is_published // Changed from is_anonymous
         } = eventData;
 
         const result = await client.query(
             `UPDATE events SET 
-                category_id = $1, 
+                category = $1, 
                 title = $2, 
                 description = $3, 
                 coordinates = ST_SetSRID(ST_MakePoint($4, $5), 4326), 
                 location = $6, 
                 start_datetime = $7, 
                 end_datetime = $8, 
-                status = $9
+                is_published = $9 -- Changed from is_anonymous
              WHERE id = $10 RETURNING *`,
-            [category_id, title, description, location.x, location.y, address, start_date, end_date, status_id, id]
+            [category_id, title, description, location.x, location.y, address, start_date, end_date, is_published, id] // Changed from is_anonymous
         );
 
         await client.query('DELETE FROM event_images WHERE event_id = $1', [id]);
@@ -266,16 +268,7 @@ exports.getEventCategories = async () => {
     }
 };
 
-// Statuses
-exports.getEventStatuses = async () => {
-    try {
-        const result = await pool.query('SELECT * FROM event_status');
-        return result.rows;
-    } catch (error) {
-        console.error(`[DATABASE] Error getting event statuses: ${error.message}`);
-        throw error;
-    }
-};
+
 
 // Photos
 exports.addEventPhoto = async (photo) => {

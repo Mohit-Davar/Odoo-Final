@@ -23,10 +23,6 @@ CREATE TABLE event_categories (
     category VARCHAR(100) UNIQUE NOT NULL
 );
 
-CREATE TABLE event_status (
-    id SERIAL PRIMARY KEY,
-    status VARCHAR(100) UNIQUE NOT NULL
-);
 
 CREATE TABLE events (
     id BIGSERIAL PRIMARY KEY,
@@ -38,7 +34,7 @@ CREATE TABLE events (
     coordinates GEOGRAPHY(Point, 4326),
     start_datetime TIMESTAMPTZ NOT NULL,
     end_datetime TIMESTAMPTZ NOT NULL,
-    status INT NOT NULL REFERENCES event_status(id) ON DELETE RESTRICT,
+    is_published BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
