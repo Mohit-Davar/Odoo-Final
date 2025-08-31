@@ -272,7 +272,7 @@ export const ImageUploadSection = ({
           <div key={image.id} className="group relative">
             <div className="bg-white/20 backdrop-blur-sm p-2 border border-white/30 rounded-2xl">
               <img
-                src={image.preview}
+                src={image.url}
                 alt={image.name}
                 className="rounded-xl w-full h-24 object-cover"
               />

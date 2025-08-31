@@ -317,6 +317,10 @@ const EventHiveBooking = () => {
     }
   };
 
+  const handleClick = ()=>{
+    navigate(-1);
+  }
+
   const resetForm = () => {
     const resetCounts = {};
     data?.tickets?.forEach(ticket => {
@@ -352,7 +356,7 @@ const EventHiveBooking = () => {
               ))}
 
               <ActionButtons
-                onBack={resetForm}
+                onBack={handleClick}
                 onNext={() => setCurrentScreen('attendees')}
                 nextLabel={`Continue (${getTotalTickets()} tickets)`}
                 nextDisabled={getTotalTickets() === 0}

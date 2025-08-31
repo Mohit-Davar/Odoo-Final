@@ -1162,7 +1162,50 @@ const CreateEditEvent = () => {
                       showToast("Maximum 5 images allowed.", "error");
                       return;
                     }
-                    // Process files...
+
+                    const filesToProcess = Array.from(files).slice(0, remainingSlots);
+                    if (filesToProcess.length === 0) return;
+
+                    const imagePromises = filesToProcess.map(file => {
+                      return new Promise((resolve, reject) => {
+                        if (!file.type.startsWith('image/')) {
+                          return reject(new Error(`File ${file.name} is not a valid image.`));
+                        }
+                        if (file.size > 5 * 1024 * 1024) { // 5MB limit
+                          return reject(new Error(`Image ${file.name} exceeds 5MB limit.`));
+                        }
+
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                          const newImage = {
+                            id: Date.now() + Math.random(), // simple unique id for client-side removal
+                            name: file.name,
+                            size: file.size,
+                            type: file.type,
+                            base64: e.target.result,
+                            url: e.target.result, // for preview in ImageUploadSection
+                          };
+                          resolve(newImage);
+                        };
+                        reader.onerror = () => {
+                          reject(new Error(`Failed to read file ${file.name}.`));
+                        };
+                        reader.readAsDataURL(file);
+                      });
+                    });
+
+                    Promise.all(imagePromises.map(p => p.catch(e => e)))
+                      .then(results => {
+                        const successfullyUploaded = results.filter(r => !(r instanceof Error));
+                        const errors = results.filter(r => r instanceof Error);
+
+                        if (successfullyUploaded.length > 0) {
+                          setValue("images", [...currentImages, ...successfullyUploaded], { shouldValidate: true });
+                          showToast(`${successfullyUploaded.length} image(s) uploaded.`, "success");
+                        }
+
+                        errors.forEach(error => showToast(error.message, "error"));
+                      });
                   }}
                   onRemove={(imageId) => {
                     const updatedImages = field.value.filter((img) => img.id !== imageId);
