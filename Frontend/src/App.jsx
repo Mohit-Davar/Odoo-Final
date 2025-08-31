@@ -7,6 +7,7 @@ import NotFound from '@/pages/NotFound';
 import Signup from '@/pages/Signup';
 import HomePage from './pages/Home';
 import Profile from './pages/Profile';
+
 import CreateEvent from './pages/CreateEvent';
 import LandingPage from './pages/Landing';
 import Attendes from './pages/Attendes';
