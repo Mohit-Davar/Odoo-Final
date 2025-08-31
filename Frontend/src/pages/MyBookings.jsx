@@ -304,7 +304,7 @@ const BookingCard = ({ booking, onViewDetails, onDownload }) => {
                     </div>
                     <div className="text-right">
                         <div className="font-bold text-white text-2xl">
-                            ${booking.price}
+                            ₹{booking.price}
                         </div>
                     </div>
                 </div>
@@ -459,7 +459,7 @@ Please present this ticket at the venue
                                     <div className="text-zinc-400 text-xs uppercase tracking-wider">Total Bookings</div>
                                 </div>
                                 <div className="bg-zinc-800/60 p-4 rounded-lg text-center">
-                                    <div className="font-bold text-green-400 text-2xl">${totalSpent.toFixed(2)}</div>
+                                    <div className="font-bold text-green-400 text-2xl">₹{totalSpent.toFixed(2)}</div>
                                     <div className="text-zinc-400 text-xs uppercase tracking-wider">Total Spent</div>
                                 </div>
                             </div>

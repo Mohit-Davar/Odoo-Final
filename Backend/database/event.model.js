@@ -1,5 +1,13 @@
 
 const pool = require('../service/db');
+const { v2: cloudinary } = require('cloudinary');
+
+// Configure Cloudinary
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 // Events
 exports.createEvent = async (userID, eventData) => {
@@ -12,7 +20,7 @@ exports.createEvent = async (userID, eventData) => {
             title,
             description,
             location, // coordinates object {x, y}
-            address, // location string
+            address,  // location string
             start_date,
             end_date,
             images,
@@ -42,15 +50,22 @@ exports.createEvent = async (userID, eventData) => {
 
         const newEvent = eventResult.rows[0];
 
-        // Insert images if provided
+        // Upload images to Cloudinary
         if (images && images.length > 0) {
-            const imagePromises = images.map((image, index) => {
-                return client.query(
+            const imagePromises = images.map(async (image, index) => {
+                const uploadResult = await cloudinary.uploader.upload(image.base64, {
+                    folder: `events/${newEvent.id}`,
+                    public_id: `image_${index + 1}`,
+                });
+
+                // Store URL in DB
+                await client.query(
                     `INSERT INTO event_images (event_id, image_url, is_cover) 
                      VALUES ($1, $2, $3)`,
-                    [newEvent.id, image.base64, index === 0] // Set first image as cover
+                    [newEvent.id, uploadResult.secure_url, index === 0]
                 );
             });
+
             await Promise.all(imagePromises);
         }
 
@@ -86,7 +101,6 @@ exports.createEvent = async (userID, eventData) => {
         client.release();
     }
 };
-
 
 exports.getEvents = async () => {
     try {

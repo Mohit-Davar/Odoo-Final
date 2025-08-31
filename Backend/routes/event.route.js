@@ -1,9 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const event = require('../controllers/event.controller');
+const multer = require('multer');
+
+// Multer storage configuration
+const upload = multer({ storage: multer.memoryStorage() });
 
 router.route('/')
-    .post(event.createEvent)
+    .post(upload.array('images', 5), event.createEvent)
     .get(event.getEvents);
 
 router.route('/details/:id')
@@ -19,7 +23,7 @@ router.route('/statuses')
     .get(event.getEventStatuses);
 
 router.route("/edit/:id")
-    .put(event.updateEvent)
+    .put(upload.array('images', 5), event.updateEvent)
 
 // Photos
 router.route('/photos')

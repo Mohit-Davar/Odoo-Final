@@ -831,6 +831,8 @@ const CreateEditEvent = () => {
         return;
       }
 
+      const formData = new FormData();
+
       const startDateTime = combineDateTime(
         data.eventDateTime.dateRange.from,
         data.eventDateTime.startTime
@@ -840,40 +842,38 @@ const CreateEditEvent = () => {
           ? combineDateTime(data.eventDateTime.dateRange.to, data.eventDateTime.endTime)
           : startDateTime;
 
-      // Format ticket data for submission, sending the ID
-      const ticketsData = data.tickets.map(ticket => ({
+      formData.append('category_id', data.category);
+      formData.append('title', data.title.trim());
+      formData.append('description', data.description.trim());
+      formData.append('location', JSON.stringify({ x: data.coordinates.lon, y: data.coordinates.lat }));
+      formData.append('address', data.location.trim());
+      formData.append('start_date', startDateTime.toISOString());
+      formData.append('end_date', endDateTime.toISOString());
+      formData.append('is_published', data.isPublished);
+      formData.append('pseudonym_id', null);
+      formData.append('status_id', 1);
+      formData.append('tickets', JSON.stringify(data.tickets.map(ticket => ({
           ticket_type_id: parseInt(ticket.ticket_type, 10),
           price: parseFloat(ticket.price),
           quantity: parseInt(ticket.quantity, 10),
           max_per_user: parseInt(ticket.maxPerUser, 10),
           sales_start_date: ticket.salesStart.toISOString(),
           sales_end_date: ticket.salesEnd.toISOString(),
-      }));
-      
-      const submissionData = {
-        category_id: data.category,
-        title: data.title.trim(),
-        description: data.description.trim(),
-        location: { x: data.coordinates.lon, y: data.coordinates.lat },
-        address: data.location.trim(),
-        start_date: startDateTime.toISOString(),
-        end_date: endDateTime.toISOString(),
-        is_published: data.isPublished,
-        pseudonym_id: null,
-        status_id: 1,
-        images: data.images.map((img) => ({
-          name: img.name,
-          size: img.size,
-          type: img.type,
-          base64: img.base64,
-        })),
-        tickets: ticketsData,
-      };
+      }))));
+
+      // Separate new images (File objects) from existing ones (URL strings)
+      const newImages = data.images.filter(img => img.file);
+      const existingImages = data.images.filter(img => !img.file);
+
+      newImages.forEach(image => {
+        formData.append('images', image.file);
+      });
 
       if (isEditMode) {
-        updateEventMutation.mutate({ eventId, data: submissionData });
+        formData.append('existing_images', JSON.stringify(existingImages));
+        updateEventMutation.mutate({ eventId, data: formData });
       } else {
-        createEventMutation.mutate(submissionData);
+        createEventMutation.mutate(formData);
       }
     },
     [isEditMode, eventId, createEventMutation, updateEventMutation]
@@ -1175,22 +1175,15 @@ const CreateEditEvent = () => {
                           return reject(new Error(`Image ${file.name} exceeds 5MB limit.`));
                         }
 
-                        const reader = new FileReader();
-                        reader.onload = (e) => {
-                          const newImage = {
-                            id: Date.now() + Math.random(), // simple unique id for client-side removal
-                            name: file.name,
-                            size: file.size,
-                            type: file.type,
-                            base64: e.target.result,
-                            url: e.target.result, // for preview in ImageUploadSection
-                          };
-                          resolve(newImage);
+                        const newImage = {
+                          id: Date.now() + Math.random(),
+                          name: file.name,
+                          size: file.size,
+                          type: file.type,
+                          file: file, // Keep the file object
+                          url: URL.createObjectURL(file), // Create a preview URL
                         };
-                        reader.onerror = () => {
-                          reject(new Error(`Failed to read file ${file.name}.`));
-                        };
-                        reader.readAsDataURL(file);
+                        resolve(newImage);
                       });
                     });
 

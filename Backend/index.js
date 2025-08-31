@@ -32,7 +32,8 @@ io.on("connection", (socket) => {
 
 //Express Middlewares for recieving and parsing json and form data
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.json({ limit: '100mb' }));  // increase to 50MB
+app.use(express.urlencoded({ limit: '100mb', extended: true }));
 const cookieParser = require("cookie-parser");
 app.use(cookieParser());
 
